@@ -65,13 +65,14 @@ entry.grid(column=2,row=1)
 #Radiobutton
 def radio_used():
     if radio_state.get()==1:
-        label1.config(text="Enter IP Address")
-        label2.config(text="Hostname is:  ")
-        print(radio_state.get())
+        _extracted_from_radio_used_3("Enter IP Address", "Hostname is:  ")
     if radio_state.get()==2:
-        label1.config(text="Enter Hostname")
-        label2.config(text="The IP address is:  ")
-        print(radio_state.get())
+        _extracted_from_radio_used_3("Enter Hostname", "The IP address is:  ")
+
+def _extracted_from_radio_used_3(text, arg1):
+    label1.config(text=text)
+    label2.config(text=arg1)
+    print(radio_state.get())
 
 #Variable to hold on to which radio button value is checked.
 radio_state = IntVar()
@@ -92,8 +93,6 @@ def checkbutton_used():
     print(checked_state.get())
     if checked_state.get()==1:
         pyperclip.copy(r_entry.get())
-    else:
-        pass
 
 
 #variable to hold on to checked state, 0 is off, 1 is on.
