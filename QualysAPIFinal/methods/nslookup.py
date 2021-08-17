@@ -3,7 +3,6 @@ import socket
 host= "tulpwctxavt1"
 ip_addr="10.248.0.42"
 
-
 class NSLookup:
     def __init__(self):
         self.ip,

@@ -6,7 +6,7 @@ import os
 from requests import NullHandler
 
 
-from apifunctions import ApiFunction
+from methods.apifunctions import ApiFunction
 
 #-----------------------------Global Constants and Initializers---------------------------------#
 USERNAME = "wamsn_qa1"
@@ -17,7 +17,7 @@ uniqueid='1525419'
 
 
 
-#-----------------------------------------Logic-----------------------------------------------#
+#-----------------------------------------UI-Logics-----------------------------------------------#
 
 def open_file():
     f= open("ips_list.csv","w+")
