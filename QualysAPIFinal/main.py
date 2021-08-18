@@ -4,8 +4,7 @@ from tkinter import *
 import os
 
 from requests import NullHandler
-
-
+from os.path import exists
 from methods.apifunctions import ApiFunction
 
 #-----------------------------Global Constants and Initializers---------------------------------#
@@ -20,9 +19,12 @@ uniqueid='1525419'
 #-----------------------------------------UI-Logics-----------------------------------------------#
 
 def open_file():
-    f= open("ips_list.csv","w+")
-    f.close
-    os.system("open -a 'path/Microsoft Excel.app' 'ips_list.csv'")
+    filename="ips_list.csv"
+    if not exists("ips_list.csv"):
+        f= open(f"{filename}","w+")
+        f.close
+    os.startfile(f'{filename}')
+
 
 def submitted():
     messagebox.showinfo(
@@ -66,6 +68,7 @@ reset_button.config(state=DISABLED)
 
 OpenFile=Button(text="Open IP List",command=NullHandler)
 Assetgroup_update=Button(text="Update Asset",command=NullHandler)
+
 
 openfile=Button(command=open_file)
 openfile.config(text="open file")
