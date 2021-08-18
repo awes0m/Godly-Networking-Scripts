@@ -28,7 +28,7 @@ class ApiFunction:
             ('enable_pc', '1'),
             ('tracking_method', 'IP'),
         )
-        data = open('ips_list.csv', 'rb').read()  # -----------------------TODO Create file- (not done)
+        data = open('processed_list.csv', 'rb').read()  # -----------------------TODO Create file- (not done)
         response = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/ip/', headers=headers, params=params,
                                  data=data, auth=(f'{USERNAME}', f'{PASSWORD}'))
 
@@ -81,7 +81,7 @@ class ApiFunction:
         params = (
             ('action', 'edit'),
         )
-        iplist = open('ips_list.csv', 'rb').read()
+        iplist = open('processed_list.csv', 'rb').read()
 
         data = {
             'id': unique_id,
@@ -95,25 +95,43 @@ class ApiFunction:
             f.write(f'str({response.headers})')
 
     #TODO 4-Update Authentication--(Not tested)
-    def auth_add(self):
+    def auth_add_windows(self):
         USERNAME = self.USERNAME,
         PASSWORD = self.PASSWORD,
         unique_id = self.unique_id,
         headers = {
             'X-Requested-With': 'curl',
         }
-        iplist = open('ips_list.csv', 'rb').read()
+        iplist = open('processed_list.csv', 'rb').read()
 
-        data = {
-            'add_ips': iplist,
-        }
+
 
         params = {
             'action':'update',
             'id':f'{unique_id}',
+            'add_ips': iplist,
         }
 
-        response = requests.get('https://qualysapi.qualys.com/api/2.0/fo/auth/windows/', headers=headers, params=params,data=data,
+        response = requests.get('https://qualysapi.qualys.com/api/2.0/fo/auth/windows/', headers=headers, params=params,
+                                auth=(f'{USERNAME}', f'{PASSWORD}'))
+        print(response.text)
+        print(response.headers)
+    def add_auuth_unix(self):
+        USERNAME = self.USERNAME,
+        PASSWORD = self.PASSWORD,
+        unique_id = self.unique_id,
+        headers = {
+            'X-Requested-With': 'curl',
+        }
+        iplist = open('processed_list.csv', 'rb').read()
+
+        params = {
+            'action':'update',
+            'id':f'{unique_id}',
+            'add_ips': iplist,
+        }
+
+        response = requests.get('https://qualysapi.qualys.com/api/2.0/fo/auth/unix/', headers=headers, params=params,
                                 auth=(f'{USERNAME}', f'{PASSWORD}'))
         print(response.text)
         print(response.headers)
