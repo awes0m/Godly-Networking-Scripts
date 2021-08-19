@@ -1,23 +1,11 @@
 import socket
 
-host= "tulpwctxavt1"
-ip_addr="10.248.0.42"
+# host to ip
+def hostToip(hostname="localhost"):
+    return socket.gethostbyname(hostname)
 
+ # ip to host
 
-class NSLookup:
-    def __init__(self):
-        self.ip,
-        self.hostname
-    #host to ip
-    def hostToip(hostname):
-        return socket.gethostbyname(hostname)
-        
-            
-
-    #ip to host
-    def ipTohost(ip):
-        hostName=socket.gethostbyaddr(ip)
-        return hostName[0]
-
-    print(ipTohost(ip_addr))
-    print(hostToip(host))
+def ipTohost(ip="127.0.0.0"):
+    hostName = socket.gethostbyaddr(ip)
+    return hostName[0]

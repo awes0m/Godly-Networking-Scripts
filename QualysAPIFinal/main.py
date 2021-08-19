@@ -9,7 +9,7 @@ from methods.apifunctions import ApiFunction
 
 #-----------------------------Global Constants and Initializers---------------------------------#
 USERNAME = "wamsn_qa1"
-PASSWORD = "ruhn5rPWvsjGpJF"
+PASSWORD = "WlqZwBKh7Fn72pUr"
 endpoint_url ="https://qualysapi.qualys.com/api/2.0/fo/session/"
 session_ID=None
 uniqueid='1525419'
@@ -44,8 +44,8 @@ def submitted():
     )
         confirm.config(state=DISABLED)
         reset_button.config(state=NORMAL)
-        uniqueIdEntry.insert("Asset Group UniqueID")
-        uniqueIdEntry.focus()
+        uidAssetgroup.insert("Asset Group UniqueID")
+        uidAssetgroup.focus()
 
 def reset():
     
@@ -55,16 +55,26 @@ def reset():
 def update_Assets():
     USERNAME=username.get()
     PASSWORD=password.get()
-    uniqueid=uniqueIdEntry.get()
+    uniqueid=uidAssetgroup.get()
 
 
     af=ApiFunction(USERNAME,PASSWORD,uniqueid),
     
     af.add_ip(),
-
     af.clear_asset_group(),
     af.update_Asset_group(),
+def update_Auth_records():
+    USERNAME=username.get()
+    PASSWORD=password.get()
+    uniqueid=uidAuthentication.get()
+
+
+    af=ApiFunction(USERNAME,PASSWORD,uniqueid),
     
+    af.add_ip(),
+    af.clear_asset_group(),
+    af.update_Asset_group(),
+
 
 
 
@@ -85,7 +95,8 @@ WorkLabel1=Label(text="Enter Host data here--->                    ")
 username=Entry(width=30)
 username.focus()
 password=Entry(width=30)
-uniqueIdEntry=Entry(width=30)
+uidAssetgroup=Entry(width=30)
+uidAuthentication=Entry(width=30)
 #buttons
 confirm=Button(text="Submit/Lock",command=submitted,width= 20)
 reset_button=Button(text="Reset",command=reset,width= 20)
@@ -110,7 +121,7 @@ password.grid(column=2,row=2)
 #buttons
 confirm.grid(column=3,row=2)
 reset_button.grid(column=3,row=1)
-uniqueIdEntry.grid(column=2,row =5)
+uidAssetgroup.grid(column=2,row =5)
 Assetgroup_update.grid(column=3,row=5)
 openfile.grid(column=3,row=4)
 
