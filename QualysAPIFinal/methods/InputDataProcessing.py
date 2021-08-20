@@ -1,7 +1,10 @@
 
 
+from nslookup import hostToip
 import os
 import socket
+
+
 
 # host to ip
 
@@ -12,4 +15,4 @@ with open(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\i
 f.close
 
 for i in data:
-    print(socket.gethostbyname(i))
+    print(hostToip(i))
