@@ -16,7 +16,7 @@ def hosttoip(hostdata):
         for i in hostdata:
 
             try:
-                print(f"Processing ip {str(socket.gethostbyname_ex(i)[2])}")
+                print(f"Processing ip {i} -{str(socket.gethostbyname_ex(i)[2])}")
                 ipData.append(str(socket.gethostbyname_ex(i)[2][0]))
             except Exception as err:
                 print(
