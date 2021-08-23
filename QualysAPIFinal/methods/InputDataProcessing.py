@@ -2,8 +2,10 @@ import os
 import socket
 from numpy.core.defchararray import index
 
-
-def hosttoip(hostdata):
+#1.convert Hostnamestoipadresses
+def hosttoip(hostdata): 
+    #This takes a list of Hostname and converts to ipadresses
+    #Also generates a error log file consisting of Hostnames that couldn't be found
     ipData = []
     if os.path.exists(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv"):
         os.remove(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv")
@@ -23,8 +25,9 @@ def hosttoip(hostdata):
         print("All (possible) Hosts converted to ip")
     return ipData
 
-
+#2.sort the IP adresses in ascending Order
 def IPSorter(iplist):
+    #takes a list of [IPadresses] and returns a sorted list of IP adrersses
     return [
         ip
         for ip in sorted(
@@ -32,17 +35,17 @@ def IPSorter(iplist):
         )
     ]
     
-
+#converts the single IP address into IPnumber(eg-10.20.30.22 => 10203022)
 def IPnumber(ip):
     return int(listToString([int(ip) for ip in ip.split(".")]))
 
-    
-
+#for internal use converts a list to string
 def listToString(s): 
     return "".join(str(each) for each in s)
 
-
-def GroupConsequtiveIps(sortedIPData=[]):
+#3.Group the converted and Sorted Ips into smaller lists and return the in Qualys acceptable Network ranges
+def QualysFormatData(sortedIPData=[]):
+    #takes a list of sorted IPS and returns a list of lists containing consequitive Ips clustered together
     vals=[IPnumber(n) for n in sortedIPData]
     rangedlist = []
     sublist = []
@@ -61,9 +64,7 @@ def GroupConsequtiveIps(sortedIPData=[]):
             sublist=[sortedIPData[k]]
             rangedlist.append(sublist)
         expect = v + 1
-    return rangedlist
-
-def Qualysdata(rangedlist=[]):
+    # Converts the rangedlist(grouped ips) to Qualys readeable Ip ranges
     finaldata = []
     for each in rangedlist:
         if len(each)>1:
@@ -79,11 +80,11 @@ def Qualysdata(rangedlist=[]):
 def filetoHostList(file=r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\test.txt"):
     with open(file, 'rb') as f:
         return [i.decode().split('.')[0].upper() for i in f]
+#Main functionn that compiles all the other function(takes Hostnames => return s Qualys format data)
+def InputDataProcessor():
+    filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\ip_list.csv"
+    data = filetoHostList(filepath)
+    ipData = hosttoip(data)
+    sortedIPData = IPSorter(ipData)
+    return QualysFormatData(sortedIPData)
 
-
-filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\ip_list.csv"
-data = filetoHostList()
-ipData = hosttoip(data)
-sortedIPData = IPSorter(ipData)
-rangedlist=GroupConsequtiveIps(sortedIPData)
-print(Qualysdata(rangedlist))
