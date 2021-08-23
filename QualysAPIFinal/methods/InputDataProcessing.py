@@ -1,5 +1,6 @@
 import os
 import socket
+from numpy.core.defchararray import index
 
 
 def hosttoip(hostdata):
@@ -30,28 +31,50 @@ def IPSorter(iplist):
             iplist, key=lambda ip: [int(ip) for ip in ip.split(".")]
         )
     ]
+    
 
+def IPnumber(ip):
+    return int(listToString([int(ip) for ip in ip.split(".")]))
+
+    
 
 def listToString(s): 
     return "".join(str(each) for each in s)
-def IpToQualysdata(sortedIPData=[]):
-    for _ in range(len(sortedIPData)-1):
-        ip = sortedIPData[_]
-        IPnumber = int(listToString([int(ip) for ip in ip.split(".")]))
-        nxtip=sortedIPData[_+1]
-        nxtIPnumber = int(listToString([int(nxtip) for nxtip in nxtip.split(".")]))
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
+
+def GroupConsequtiveIps(sortedIPData=[]):
+    vals=[IPnumber(n) for n in sortedIPData]
+    rangedlist = []
+    sublist = []
+    run = []
+    result = [run]
+    expect = None
+    for v in vals:
+        if (v == expect) or (expect is None):
+            run.append(v)
+            k=vals.index(v)
+            sublist.append(sortedIPData[k])
+        else:
+            run = [v]
+            result.append(run)
+            k=vals.index(v)
+            sublist=[sortedIPData[k]]
+            rangedlist.append(sublist)
+        expect = v + 1
+    return rangedlist
+
+def Qualysdata(rangedlist=[]):
+    finaldata = []
+    for each in rangedlist:
+        if len(each)>1:
+            finaldata.append(f"{each[0]}-{each[-1]}")
+        else:
+            finaldata.append(each[0])
+    return finaldata
+            
+    
+                
+                        
 
 def filetoHostList(file=r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\test.txt"):
     with open(file, 'rb') as f:
@@ -62,4 +85,5 @@ filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\
 data = filetoHostList()
 ipData = hosttoip(data)
 sortedIPData = IPSorter(ipData)
-IpToQualysdata(sortedIPData)
+rangedlist=GroupConsequtiveIps(sortedIPData)
+print(Qualysdata(rangedlist))
