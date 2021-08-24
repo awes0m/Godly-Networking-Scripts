@@ -2,10 +2,14 @@
 from tkinter import messagebox
 from tkinter import *
 import os
-
 from requests import NullHandler
 from os.path import exists
-from methods.apifunctions import ApiFunction
+
+from logic.Add_ip import add_ip
+from logic.ClearNUpdate_asset_group import *
+from logic.Update_auth import *
+
+from screens.Update_asset_group import assetUpdateUI
 
 #-----------------------------Global Constants and Initializers---------------------------------#
 USERNAME = "wamsn_qa1"
@@ -32,11 +36,6 @@ def submitted():
             title='Information',
             message='Username/Password not Submitted!'
     )
-    # elif username.get().isEmpty() and password.get().isEmpty():
-    #     messagebox.showinfo(
-    #         title='Information',
-    #         message='Username and Password not Submitted!'
-    # )
     else:
         messagebox.showinfo(
         title='Information',
@@ -51,34 +50,7 @@ def reset():
     
     confirm.config(state=NORMAL)
     reset_button.config(state=DISABLED)
-
-def update_Assets():
-    USERNAME=username.get()
-    PASSWORD=password.get()
-    uniqueid=uidAssetgroup.get()
-
-
-    af=ApiFunction(USERNAME,PASSWORD,uniqueid),
     
-    af.add_ip(),
-    af.clear_asset_group(),
-    af.update_Asset_group(),
-def update_Auth_records():
-    USERNAME=username.get()
-    PASSWORD=password.get()
-    uniqueid=uidAuthentication.get()
-
-
-    af=ApiFunction(USERNAME,PASSWORD,uniqueid),
-    
-    af.add_ip(),
-    af.clear_asset_group(),
-    af.update_Asset_group(),
-
-
-
-
-
 #-----------------------------------------UI-----------------------------------------------#
 window=Tk()
 window.title("Som edition-Qualys Automater")
