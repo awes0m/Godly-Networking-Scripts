@@ -76,17 +76,24 @@ def QualysFormatData(sortedIPData=[]):
                 
                         
 
-def filetoHostList(file=r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\test.txt"):
+def filetoHostList(file="test.txt"):
     with open(file, 'rb') as f:
         return [i.decode().split('.')[0].upper() for i in f]
 #Main functionn that compiles all the other function(takes Hostnames => return s Qualys format data)
 def InputDataProcessor():
-    filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\datalist.csv"
+    filepath = "dataList.csv"
     data = filetoHostList()
     ipData = hosttoip(data)
     sortedIPData = IPSorter(ipData)
-    k=QualysFormatData(sortedIPData)
-    with open('processedIp_list.txt','a') as of:
-        of.write(str(k))
-    return k            
+    Qualysdata=QualysFormatData(sortedIPData)
+    if os.path.exists("QualysAPIFinal\processedIp_list.txt"):
+        os.remove("QualysAPIFinal\processedIp_list.txt")
+        f = open("QualysAPIFinal\processedIp_list.txt", 'w+')
+        f.close()
 
+    with open('processedIp_list.txt','a') as of:
+        for i in Qualysdata:
+            of.write(f'{i},') 
+            
+    os.startfile('processedIp_list.txt')        
+    return Qualysdata

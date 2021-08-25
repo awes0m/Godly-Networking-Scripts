@@ -1,0 +1,15 @@
+str(<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE SIMPLE_RETURN SYSTEM "https://qualysapi.qualys.com/api/2.0/simple_return.dtd">
+<SIMPLE_RETURN>
+  <RESPONSE>
+    <DATETIME>2021-08-25T19:51:52Z</DATETIME>
+    <TEXT>Asset Group Updated Successfully</TEXT>
+    <ITEM_LIST>
+      <ITEM>
+        <KEY>ID</KEY>
+        <VALUE>4712898</VALUE>
+      </ITEM>
+    </ITEM_LIST>
+  </RESPONSE>
+</SIMPLE_RETURN>
+)str({'Date': 'Wed, 25 Aug 2021 19:51:50 GMT', 'Server': 'Qualys', 'Strict-Transport-Security': 'max-age=63072000;, max-age=31536000; includeSubDomains', 'X-XSS-Protection': '1; mode=block, 1;mode=block', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Powered-By': 'Qualys:USPOD1:9c0e25dd-028c-5af6-e040-10ac13043f6a:fa54ffb1-6eee-c0e8-82b5-4dbe6571ca48', 'X-RateLimit-Limit': '300', 'X-RateLimit-Window-Sec': '3600', 'X-Concurrency-Limit-Limit': '10', 'X-Concurrency-Limit-Running': '0', 'X-RateLimit-ToWait-Sec': '0', 'X-RateLimit-Remaining': '287', 'Keep-Alive': 'timeout=300, max=245', 'Connection': 'Keep-Alive', 'Transfer-Encoding': 'chunked', 'Content-Type': 'application/xml'})

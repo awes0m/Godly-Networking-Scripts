@@ -48,7 +48,6 @@ def chooser():
 
         elif choice == 'b':
             data=InputDataProcessor()
-            os.startfile('processedIp_list.txt')
             logcheck=input ("Do you Want to check errorlog -Y/n =>0")
             if logcheck in ['Y','y']:
                 os.startfile("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv")
