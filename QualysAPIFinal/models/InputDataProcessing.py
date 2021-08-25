@@ -1,18 +1,17 @@
 import os
 import socket
-from numpy.core.defchararray import index
 
 #1.convert Hostnamestoipadresses
 def hosttoip(hostdata): 
     #This takes a list of Hostname and converts to ipadresses
     #Also generates a error log file consisting of Hostnames that couldn't be found
     ipData = []
-    if os.path.exists(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv"):
-        os.remove(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv")
-        f = open(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv", 'w+')
+    if os.path.exists("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv"):
+        os.remove("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv")
+        f = open("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv", 'w+')
         f.close()
 
-    with open(r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\methods\Logs\ipconvert_errorlog.csv", 'w+')as errfile:
+    with open("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv", 'w+')as errfile:
         for i in hostdata:
 
             try:
@@ -82,9 +81,12 @@ def filetoHostList(file=r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networ
         return [i.decode().split('.')[0].upper() for i in f]
 #Main functionn that compiles all the other function(takes Hostnames => return s Qualys format data)
 def InputDataProcessor():
-    filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\ip_list.csv"
-    data = filetoHostList(filepath)
+    filepath = r"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\datalist.csv"
+    data = filetoHostList()
     ipData = hosttoip(data)
     sortedIPData = IPSorter(ipData)
-    return QualysFormatData(sortedIPData)
+    k=QualysFormatData(sortedIPData)
+    with open('processedIp_list.txt','a') as of:
+        of.write(str(k))
+    return k            
 

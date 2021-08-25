@@ -1,7 +1,7 @@
 # Update Host Asset/Add to environment
 import requests
 
-def add_ip(USERNAME,PASSWORD,data,enable_vm='1',enable_pc='1'):
+def add_ip(USERNAME,PASSWORD,data,enable_vm=1,enable_pc=1):
         headers = {
             'X-Requested-With': 'Curl',
             'Content-Type': 'text/csv',
@@ -9,8 +9,8 @@ def add_ip(USERNAME,PASSWORD,data,enable_vm='1',enable_pc='1'):
 
         params = (
             ('action', 'add'),
-            ('enable_vm', enable_vm),
-            ('enable_pc', enable_pc),
+            ('enable_vm', f'{enable_vm}'),
+            ('enable_pc', f'{enable_pc}'),
             ('tracking_method', 'IP'),
         )
         response = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/ip/', headers=headers, params=params,

@@ -1,4 +1,5 @@
 
+from models.InputDataProcessing import InputDataProcessor
 from tkinter import messagebox
 from tkinter import *
 import os
@@ -9,7 +10,6 @@ from logic.Add_ip import add_ip
 from logic.ClearNUpdate_asset_group import *
 from logic.Update_auth import *
 
-from screens.Update_asset_group import assetUpdateUI
 
 #-----------------------------Global Constants and Initializers---------------------------------#
 USERNAME = "wamsn_qa1"
@@ -17,86 +17,87 @@ PASSWORD = "WlqZwBKh7Fn72pUr"
 endpoint_url ="https://qualysapi.qualys.com/api/2.0/fo/session/"
 session_ID=None
 uniqueid='1525419'
-
-
+data=[]
 
 #-----------------------------------------UI-Logics-----------------------------------------------#
 
-def open_file():
-    filename="ips_list.csv"
-    if not exists("ips_list.csv"):
+def open_file(filename):
+    if not exists(filename):
         f= open(f"{filename}","w+")
         f.close
     os.startfile(f'{filename}')
 
 
-def submitted():
-    if username.get()=="" or password.get()=="":
-        messagebox.showinfo(
-            title='Information',
-            message='Username/Password not Submitted!'
-    )
-    else:
-        messagebox.showinfo(
-        title='Information',
-        message='Username and Password Submitted!'
-    )
-        confirm.config(state=DISABLED)
-        reset_button.config(state=NORMAL)
-        uidAssetgroup.insert("Asset Group UniqueID")
-        uidAssetgroup.focus()
-
-def reset():
-    
-    confirm.config(state=NORMAL)
-    reset_button.config(state=DISABLED)
-    
-#-----------------------------------------UI-----------------------------------------------#
-window=Tk()
-window.title("Som edition-Qualys Automater")
-window.minsize(width=400,height=200)
-Hero=Label(text="""
-✩░▒▓▆▅▃▂▁Godly 𝐐𝐮𝐚𝐥𝐲𝐬 Automater▁▂▃▅▆▓▒░✩ 
-==========================================
-""")
-#labels
-Usernamelabel = Label(text="Username")
-Passwordlabel=Label(text="Password")
-WorkLabel1=Label(text="Enter Host data here--->                    ")
-#Entries
-username=Entry(width=30)
-username.focus()
-password=Entry(width=30)
-uidAssetgroup=Entry(width=30)
-uidAuthentication=Entry(width=30)
-#buttons
-confirm=Button(text="Submit/Lock",command=submitted,width= 20)
-reset_button=Button(text="Reset",command=reset,width= 20)
-reset_button.config(state=DISABLED)
-
-
-OpenFile=Button(text="Open IP List",command=NullHandler)
-Assetgroup_update=Button(text="Update Asset",command=NullHandler)
-
-
-openfile=Button(text="Open file",command=open_file,width= 20)
-
-#------------------------------Grid layout
-#labels
-Hero.grid(column=1,row=0,columnspan=3)
-Usernamelabel.grid(column=1,row=1)
-Passwordlabel.grid(column=1,row=2)
-WorkLabel1.grid(column=1,row=4,columnspan=3)
-#entries
-username.grid(column=2,row=1)
-password.grid(column=2,row=2)
-#buttons
-confirm.grid(column=3,row=2)
-reset_button.grid(column=3,row=1)
-uidAssetgroup.grid(column=2,row =5)
-Assetgroup_update.grid(column=3,row=5)
-openfile.grid(column=3,row=4)
-
-
-window.mainloop()
 #-----------------------------------------xx----------------------------------------------------
+
+
+def chooser():
+    global data
+    choice= input("""Enter choice:
+                a=Open File to enter data
+                b=process data
+                c=Add IPs
+                d=Update asset Group
+                e=Update Authe Records
+                
+                =>""")
+    if choice in {'a', 'b', 'c', 'd', 'e'}:
+        
+        if choice == 'a':
+            open_file("dataList.csv")
+
+        elif choice == 'b':
+            data=InputDataProcessor()
+            os.startfile('processedIp_list.txt')
+            logcheck=input ("Do you Want to check errorlog -Y/n =>0")
+            if logcheck in ['Y','y']:
+                os.startfile("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv")
+
+            elif logcheck not in ['N', 'n']:
+                print("Invalid Entry")
+
+        elif choice == 'c':
+            with open("processedIp_list.txt",'r') as df:
+                data=df.read()
+                
+            modulechooser=input("""Modules to Update:
+                                b=Both VM and PC
+                                vm= Only VM
+                                pc=Only PC""")
+            enable_vm = '1' if modulechooser in ['b', 'vm'] else '0'
+            enable_pc = '1' if modulechooser in ['b', 'pc'] else '0'
+
+            add_ip(USERNAME,PASSWORD,data,enable_vm,enable_pc)
+
+        elif choice == 'd':
+            with open("processedip_list.txt",'r') as df:
+                data=df.read()
+                
+            uniqueid=input("Enter Uniquie ID of asset group")
+            clear_asset_group(USERNAME,PASSWORD,uniqueid)
+            update_Asset_group(USERNAME,PASSWORD,uniqueid,data)
+
+        elif choice == 'e':
+            with open("processedip_list.txt",'r') as df:
+                data=df.read()
+                
+            oschooser =int (input("""Modules to Update:
+                                w=Windows
+                                u= Unix"""))
+            uniqueid=int (input("Enter Uniquie ID of Authentication record"))
+
+            if oschooser== 'w':
+                auth_add_windows(USERNAME,PASSWORD,uniqueid,data)
+            elif oschooser== 'u':
+                add_auth_unix(USERNAME,PASSWORD,uniqueid,data)
+
+    else:
+        print("Enter Valid Input please")
+    chooser()   
+#================================== ===
+
+print("Qualys Asset updater")
+chooser()
+        
+        
+        
