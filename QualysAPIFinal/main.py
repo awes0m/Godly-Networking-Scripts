@@ -39,11 +39,13 @@ def chooser():
                 c=Add IPs
                 d=Update asset Group
                 e=Update Authe Records
+                x=exit
                 
                 =>""")
-    if choice in {'a', 'b', 'c', 'd', 'e'}:
+    if choice in {'a', 'b', 'c', 'd', 'e','x'}:
         
         if choice == 'a':
+            print("PLEASE SAVE FILE AFTER ENTERING DATA")
             open_file("dataList.csv")
 
         elif choice == 'b':
@@ -80,15 +82,17 @@ def chooser():
             with open("processedip_list.txt",'r') as df:
                 data=df.read()
                 
-            oschooser =int (input("""Modules to Update:
+            oschooser =input("""Modules to Update:
                                 w=Windows
-                                u= Unix"""))
-            uniqueid=int (input("Enter Uniquie ID of Authentication record"))
+                                u= Unix""")
+            uniqueid=input("Enter Uniquie ID of Authentication record")
 
             if oschooser== 'w':
                 auth_add_windows(USERNAME,PASSWORD,uniqueid,data)
             elif oschooser== 'u':
                 add_auth_unix(USERNAME,PASSWORD,uniqueid,data)
+        if choice=='x':
+            exit()
 
     else:
         print("Enter Valid Input please")
