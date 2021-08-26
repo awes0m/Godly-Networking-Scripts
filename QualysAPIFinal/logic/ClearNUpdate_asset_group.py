@@ -1,4 +1,7 @@
-import requests
+import requests,os
+
+dellog_path = os.path.join(os.path.dirname('QualysAPIFinal\Logs\ApiLogs\Asset_group_deletion_log.xml'),'Asset_group_deletion_log.xml')
+updatelog_path = os.path.join(os.path.dirname('QualysAPIFinal\Logs\ApiLogs\Asset_group_updation_log.xml'),'Asset_group_updation_log.xml')
 
 def clear_asset_group(USERNAME,PASSWORD,unique_id):
         headers = {
@@ -24,7 +27,7 @@ def clear_asset_group(USERNAME,PASSWORD,unique_id):
         responseB = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/group/', headers=headers,
                                   params=params,
                                   data=dataB, auth=(f'{USERNAME}', f'{PASSWORD}'))
-        with open('Assetgroupdeletionlog.xml', 'w') as f:
+        with open(dellog_path, 'w') as f:
             f.write(f'str({responseA.text})')
             f.write(f'str({responseA.headers})')
             f.write(f'str({responseB.text})')
@@ -45,8 +48,7 @@ def update_Asset_group(USERNAME,PASSWORD,unique_id,ipdata):
             'add_ips': ipdata,
         }
 
-        response = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/group/', headers=headers, params=params,
-                                 data=data, auth=(f'{USERNAME}', f'{PASSWORD}'))
-        with open('Assetgrouplog.xml', 'w') as f:
+        response = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/group/', headers=headers, params=params,data=data, auth=(f'{USERNAME}', f'{PASSWORD}'))
+        with open(updatelog_path, 'w') as f:
             f.write(f'str({response.text})')
             f.write(f'str({response.headers})')

@@ -1,17 +1,26 @@
 import os
 import socket
+from tkinter.constants import END
+import math
 
+#-------------------------------File Paths------------------------------------------------
+filepath = os.path.join(os.path.dirname('QualysAPIFinal\RawData\Test.txt'),'Test.txt')
+dataA_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataA.txt"),'dataA.txt')
+dataB_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataB.txt"),'dataB.txt')
+Log_path=os.path.join(os.path.dirname("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv"),'ipconvert_errorlog.csv')
+
+#------------------------------Logic---------------------------
 #1.convert Hostnamestoipadresses
 def hosttoip(hostdata): 
     #This takes a list of Hostname and converts to ipadresses
     #Also generates a error log file consisting of Hostnames that couldn't be found
     ipData = []
-    if os.path.exists("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv"):
-        os.remove("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv")
-        f = open("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv", 'w+')
+    if os.path.exists(Log_path):
+        os.remove(Log_path)
+        f = open(Log_path,'w+')
         f.close()
 
-    with open("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv", 'w+')as errfile:
+    with open(Log_path, 'w+')as errfile:
         for i in hostdata:
 
             try:
@@ -73,27 +82,45 @@ def QualysFormatData(sortedIPData=[]):
     return finaldata
             
     
-                
-                        
-
 def filetoHostList(file="test.txt"):
     with open(file, 'rb') as f:
         return [i.decode().split('.')[0].upper() for i in f]
+    
+  
+  
+  
+#----------------------------Main_function-------------------  
+  
+  
 #Main functionn that compiles all the other function(takes Hostnames => return s Qualys format data)
 def InputDataProcessor():
-    filepath = "dataList.csv"
-    data = filetoHostList()
-    ipData = hosttoip(data)
-    sortedIPData = IPSorter(ipData)
-    Qualysdata=QualysFormatData(sortedIPData)
-    if os.path.exists("QualysAPIFinal\processedIp_list.txt"):
-        os.remove("QualysAPIFinal\processedIp_list.txt")
-        f = open("QualysAPIFinal\processedIp_list.txt", 'w+')
-        f.close()
+    
+    
+    data = filetoHostList(filepath) #Hostnames converted to host list
+    ipData = hosttoip(data) #Hostlist converted to ip list
 
-    with open('processedIp_list.txt','a') as of:
-        for i in Qualysdata:
-            of.write(f'{i},') 
-            
-    os.startfile('processedIp_list.txt')        
+    sortedIPData = IPSorter(ipData)#Iplist sorted in ascending order
+    Qualysdata=QualysFormatData(sortedIPData)
+    #IPlist converted to QualysData format
+    mid=len(Qualysdata)//2
+    dataA=Qualysdata[:mid]
+    dataB=Qualysdata[mid:]
+    if os.path.exists(dataA_path):
+        newFileMaker(dataA_path)
+    if os.path.exists(dataB_path):
+        newFileMaker(dataB_path)
+    with open(dataA_path,'a') as of:
+        for i in dataA:
+            of.write(f'{i},')
+
+    with open(dataB_path,'a') as of:
+        for i in dataB:
+            of.write(f'{i},')
+#==============       
+
     return Qualysdata
+
+def newFileMaker(arg0):
+    os.remove(arg0)
+    f = open(arg0, 'w+')
+    f.close()

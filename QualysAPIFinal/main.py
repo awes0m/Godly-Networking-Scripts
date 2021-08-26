@@ -3,7 +3,7 @@ from models.InputDataProcessing import InputDataProcessor
 from tkinter import messagebox
 from tkinter import *
 import os
-from requests import NullHandler
+
 from os.path import exists
 
 from logic.Add_ip import add_ip
@@ -18,7 +18,9 @@ endpoint_url ="https://qualysapi.qualys.com/api/2.0/fo/session/"
 session_ID=None
 uniqueid='1525419'
 data=[]
+#-----------------------------------FilePaths---------------------------#
 
+RawData_path=os.path.join(os.path.dirname('QualysAPIFinal\RawData\dataList.csv'),'dataList.csv')
 #-----------------------------------------UI-Logics-----------------------------------------------#
 
 def open_file(filename):
@@ -45,58 +47,90 @@ def chooser():
     if choice in {'a', 'b', 'c', 'd', 'e','x'}:
         
         if choice == 'a':
-            print("PLEASE SAVE FILE AFTER ENTERING DATA")
-            open_file("dataList.csv")
+            t=input("PLEASE SAVE FILE AFTER ENTERING DATA-------- Enter to confirm")
+            open_file(RawData_path)
 
         elif choice == 'b':
             data=InputDataProcessor()
-            logcheck=input ("Do you Want to check errorlog -Y/n =>0")
+            logcheck=input ("Do you Want to check errorlog -Y/n =>  ")
             if logcheck in ['Y','y']:
-                os.startfile("QualysAPIFinal\models\Logs\ipconvert_errorlog.csv")
+                os.startfile("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv")
 
             elif logcheck not in ['N', 'n']:
                 print("Invalid Entry")
 
         elif choice == 'c':
-            with open("processedIp_list.txt",'r') as df:
-                data=df.read()
-                
-            modulechooser=input("""Modules to Update:
-                                b=Both VM and PC
-                                vm= Only VM
-                                pc=Only PC""")
-            enable_vm = '1' if modulechooser in ['b', 'vm'] else '0'
-            enable_pc = '1' if modulechooser in ['b', 'pc'] else '0'
-
-            add_ip(USERNAME,PASSWORD,data,enable_vm,enable_pc)
-
+            chooser_c()
         elif choice == 'd':
-            with open("processedip_list.txt",'r') as df:
-                data=df.read()
-                
-            uniqueid=input("Enter Uniquie ID of asset group")
-            clear_asset_group(USERNAME,PASSWORD,uniqueid)
-            update_Asset_group(USERNAME,PASSWORD,uniqueid,data)
-
+            chooser_d()
         elif choice == 'e':
-            with open("processedip_list.txt",'r') as df:
-                data=df.read()
-                
+            with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
+                dataA=dA.read()
+            with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+                dataB=dB.read()
+
+
             oschooser =input("""Modules to Update:
                                 w=Windows
-                                u= Unix""")
+                                u= Unix
+                                
+                                ==>""")
             uniqueid=input("Enter Uniquie ID of Authentication record")
 
             if oschooser== 'w':
-                auth_add_windows(USERNAME,PASSWORD,uniqueid,data)
+                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataA)
+                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataB)
+
             elif oschooser== 'u':
-                add_auth_unix(USERNAME,PASSWORD,uniqueid,data)
+                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataA)
+                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataB)
+
+
         if choice=='x':
             exit()
 
     else:
         print("Enter Valid Input please")
-    chooser()   
+
+    print("Function completed !!")
+    x=input("Run Again....? Y/n  - ")
+    if x in ['Y','y']:
+        chooser()
+    elif x in ['N','n']:
+        exit()   
+
+def chooser_d():
+    with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
+        dataA=dA.read()
+    with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+        dataB=dB.read()
+
+
+    uniqueid=input("Enter Uniquie ID of asset group")
+    wheel = ('-', '/', '|', '\\')
+
+    print("assets group cleared now updating new ips")
+    clear_asset_group(USERNAME,PASSWORD,uniqueid)
+    print("assets group cleared now updating new ips")
+    print(wheel)
+    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataA)
+    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataB)
+
+def chooser_c():
+    with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
+        dataA=dA.read()
+    with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+        dataB=dB.read()
+    modulechooser=input("""Modules to Update:
+                                b=Both VM and PC
+                                vm= Only VM
+                                pc=Only PC""")
+    enable_vm = '1' if modulechooser in ['b', 'vm'] else '0'
+    enable_pc = '1' if modulechooser in ['b', 'pc'] else '0'
+
+    add_ip(USERNAME,PASSWORD,dataA,enable_vm,enable_pc)
+    add_ip(USERNAME,PASSWORD,dataB,enable_vm,enable_pc)
+    print("ips added to host asset")   
 #================================== ===
 
 print("Qualys Asset updater")

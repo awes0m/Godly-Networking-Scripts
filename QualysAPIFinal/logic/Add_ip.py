@@ -1,5 +1,7 @@
 # Update Host Asset/Add to environment
-import requests
+import requests,os
+
+log_path = os.path.join(os.path.dirname('QualysAPIFinal\Logs\ApiLogs\AddIP_log.xml'),'AddIP_log.xml')
 
 def add_ip(USERNAME,PASSWORD,data,enable_vm=1,enable_pc=1):
         headers = {
@@ -15,7 +17,13 @@ def add_ip(USERNAME,PASSWORD,data,enable_vm=1,enable_pc=1):
         )
         response = requests.post('https://qualysapi.qualys.com/api/2.0/fo/asset/ip/', headers=headers, params=params,
                                  data=data, auth=(f'{USERNAME}', f'{PASSWORD}'))
-
-        with open('Hostassetlog.xml', 'w') as f:
+        with open(log_path,'w') as f:
             f.write(f'str({response.text})')
             f.write(f'str({response.headers})')
+        
+        print("done!")
+        print("Response Logs at -QualysAPIFinal\Logs\ApiLogs   ==> AddIP_log.xml")
+        print("-")
+        print("-")
+        
+        
