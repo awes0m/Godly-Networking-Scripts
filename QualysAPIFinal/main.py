@@ -2,7 +2,7 @@
 from models.InputDataProcessing import InputDataProcessor
 from tkinter import messagebox
 from tkinter import *
-import os
+import os,datetime
 
 from os.path import exists
 
@@ -18,6 +18,8 @@ endpoint_url ="https://qualysapi.qualys.com/api/2.0/fo/session/"
 session_ID=None
 uniqueid='1525419'
 data=[]
+
+file_id=str (datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 #-----------------------------------FilePaths---------------------------#
 
 RawData_path=os.path.join(os.path.dirname('QualysAPIFinal\RawData\dataList.csv'),'dataList.csv')
@@ -79,12 +81,12 @@ def chooser():
             uniqueid=input("Enter Uniquie ID of Authentication record")
 
             if oschooser== 'w':
-                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataA)
-                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataB)
+                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataA,file_id=f'{file_id}_A')
+                auth_add_windows(USERNAME,PASSWORD,uniqueid,dataB,file_id=f'{file_id}_B')
 
             elif oschooser== 'u':
-                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataA)
-                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataB)
+                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataA,file_id=f'{file_id}_A')
+                add_auth_unix(USERNAME,PASSWORD,uniqueid,dataB,file_id=f'{file_id}_B')
 
 
         if choice=='x':
@@ -111,11 +113,11 @@ def chooser_d():
     wheel = ('-', '/', '|', '\\')
 
     print("assets group cleared now updating new ips")
-    clear_asset_group(USERNAME,PASSWORD,uniqueid)
+    clear_asset_group(USERNAME,PASSWORD,uniqueid,file_id=f'{file_id}_A')
     print("assets group cleared now updating new ips")
     print(wheel)
-    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataA)
-    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataB)
+    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataA,file_id=f'{file_id}_A')
+    update_Asset_group(USERNAME,PASSWORD,uniqueid,dataB,file_id=f'{file_id}_B')
 
 def chooser_c():
     with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
@@ -129,8 +131,8 @@ def chooser_c():
     enable_vm = '1' if modulechooser in ['b', 'vm'] else '0'
     enable_pc = '1' if modulechooser in ['b', 'pc'] else '0'
 
-    add_ip(USERNAME,PASSWORD,dataA,enable_vm,enable_pc)
-    add_ip(USERNAME,PASSWORD,dataB,enable_vm,enable_pc)
+    add_ip(USERNAME,PASSWORD,dataA,enable_vm,enable_pc,file_id=f'{file_id}_A')
+    add_ip(USERNAME,PASSWORD,dataB,enable_vm,enable_pc,file_id=f'{file_id}_B')
     print("ips added to host asset")   
 #================================== ===
 

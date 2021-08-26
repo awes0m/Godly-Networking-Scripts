@@ -2,8 +2,8 @@ str(<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE SIMPLE_RETURN SYSTEM "https://qualysapi.qualys.com/api/2.0/simple_return.dtd">
 <SIMPLE_RETURN>
   <RESPONSE>
-    <DATETIME>2021-08-26T16:36:07Z</DATETIME>
+    <DATETIME>2021-08-26T17:50:48Z</DATETIME>
     <TEXT>IPs successfully added to Vulnerability Management/Compliance Management</TEXT>
   </RESPONSE>
 </SIMPLE_RETURN>
-)str({'Date': 'Thu, 26 Aug 2021 16:36:05 GMT', 'Server': 'Qualys', 'Strict-Transport-Security': 'max-age=63072000;, max-age=31536000; includeSubDomains', 'X-XSS-Protection': '1; mode=block, 1;mode=block', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Powered-By': 'Qualys:USPOD1:9c0e25dd-028c-5af6-e040-10ac13043f6a:fa54ffb1-6eee-c0e8-82b5-4dbe6571ca48', 'X-RateLimit-Limit': '300', 'X-RateLimit-Window-Sec': '3600', 'X-Concurrency-Limit-Limit': '10', 'X-Concurrency-Limit-Running': '0', 'X-RateLimit-ToWait-Sec': '0', 'X-RateLimit-Remaining': '298', 'Keep-Alive': 'timeout=300, max=256', 'Connection': 'Keep-Alive', 'Transfer-Encoding': 'chunked', 'Content-Type': 'application/xml'})
+)str({'Date': 'Thu, 26 Aug 2021 17:50:46 GMT', 'Server': 'Qualys', 'Strict-Transport-Security': 'max-age=63072000;, max-age=31536000; includeSubDomains', 'X-XSS-Protection': '1; mode=block, 1;mode=block', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'SAMEORIGIN', 'X-Powered-By': 'Qualys:USPOD1:9c0e25dd-028c-5af6-e040-10ac13043f6a:fa54ffb1-6eee-c0e8-82b5-4dbe6571ca48', 'X-RateLimit-Limit': '300', 'X-RateLimit-Window-Sec': '3600', 'X-Concurrency-Limit-Limit': '10', 'X-Concurrency-Limit-Running': '0', 'X-RateLimit-ToWait-Sec': '0', 'X-RateLimit-Remaining': '298', 'Keep-Alive': 'timeout=300, max=248', 'Connection': 'Keep-Alive', 'Transfer-Encoding': 'chunked', 'Content-Type': 'application/xml'})

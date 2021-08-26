@@ -2,12 +2,13 @@ import os
 import socket
 from tkinter.constants import END
 import math
-
+import datetime
 #-------------------------------File Paths------------------------------------------------
+file_id=str (datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 
 dataA_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataA.txt"),'dataA.txt')
 dataB_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataB.txt"),'dataB.txt')
-Log_path=os.path.join(os.path.dirname("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv"),'ipconvert_errorlog.csv')
+Log_path=os.path.join(os.path.dirname("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv"),f'ipconvert_errorlog_{file_id}.csv')
 
 #------------------------------Logic---------------------------
 #1.convert Hostnamestoipadresses
