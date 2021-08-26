@@ -4,7 +4,7 @@ from tkinter.constants import END
 import math
 
 #-------------------------------File Paths------------------------------------------------
-filepath = os.path.join(os.path.dirname('QualysAPIFinal\RawData\Test.txt'),'Test.txt')
+
 dataA_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataA.txt"),'dataA.txt')
 dataB_path=os.path.join(os.path.dirname("QualysAPIFinal\data\dataB.txt"),'dataB.txt')
 Log_path=os.path.join(os.path.dirname("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv"),'ipconvert_errorlog.csv')
@@ -93,7 +93,7 @@ def filetoHostList(file="test.txt"):
   
   
 #Main functionn that compiles all the other function(takes Hostnames => return s Qualys format data)
-def InputDataProcessor():
+def InputDataProcessor(filepath):
     
     
     data = filetoHostList(filepath) #Hostnames converted to host list

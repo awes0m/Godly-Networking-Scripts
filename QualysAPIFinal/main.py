@@ -21,6 +21,7 @@ data=[]
 #-----------------------------------FilePaths---------------------------#
 
 RawData_path=os.path.join(os.path.dirname('QualysAPIFinal\RawData\dataList.csv'),'dataList.csv')
+
 #-----------------------------------------UI-Logics-----------------------------------------------#
 
 def open_file(filename):
@@ -51,7 +52,7 @@ def chooser():
             open_file(RawData_path)
 
         elif choice == 'b':
-            data=InputDataProcessor()
+            data=InputDataProcessor(RawData_path)
             logcheck=input ("Do you Want to check errorlog -Y/n =>  ")
             if logcheck in ['Y','y']:
                 os.startfile("QualysAPIFinal\Logs\Ip_hosterrors\ipconvert_errorlog.csv")
