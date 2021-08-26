@@ -3,6 +3,8 @@ from models.InputDataProcessing import InputDataProcessor
 from tkinter import messagebox
 from tkinter import *
 import os,datetime
+import data.constant as const
+import subprocess   
 
 from os.path import exists
 
@@ -12,14 +14,12 @@ from logic.Update_auth import *
 
 
 #-----------------------------Global Constants and Initializers---------------------------------#
-USERNAME = "wamsn_qa1"
-PASSWORD = "WlqZwBKh7Fn72pUr"
+USERNAME = const.USERNAME
+PASSWORD = const.PASSWORD
 endpoint_url ="https://qualysapi.qualys.com/api/2.0/fo/session/"
-session_ID=None
-uniqueid='1525419'
-data=[]
 
-file_id=str (datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
+
+file_id=const.FILE_ID
 #-----------------------------------FilePaths---------------------------#
 
 RawData_path=os.path.join(os.path.dirname('QualysAPIFinal\RawData\dataList.csv'),'dataList.csv')
@@ -39,15 +39,16 @@ def open_file(filename):
 def chooser():
     global data
     choice= input("""Enter choice:
-                a=Open File to enter data
-                b=process data
-                c=Add IPs
-                d=Update asset Group
-                e=Update Authe Records
-                x=exit
+                a =Open File to enter data
+                b =process data
+                c =Add IPs
+                d =Update asset Group
+                e =Update Authe Records
+                l =Open Logs
+                x =exit
                 
                 =>""")
-    if choice in {'a', 'b', 'c', 'd', 'e','x'}:
+    if choice in {'a', 'b', 'c', 'd', 'e','x','l'}:
         
         if choice == 'a':
             t=input("PLEASE SAVE FILE AFTER ENTERING DATA-------- Enter to confirm")
@@ -69,13 +70,13 @@ def chooser():
         elif choice == 'e':
             with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
                 dataA=dA.read()
-            with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+            with open("QualysAPIFinal/data/dataB.txt",'r') as dB:
                 dataB=dB.read()
 
 
             oschooser =input("""Modules to Update:
-                                w=Windows
-                                u= Unix
+                                w = Windows
+                                u = Unix
                                 
                                 ==>""")
             uniqueid=input("Enter Uniquie ID of Authentication record")
@@ -89,6 +90,9 @@ def chooser():
                 add_auth_unix(USERNAME,PASSWORD,uniqueid,dataB,file_id=f'{file_id}_B')
 
 
+        elif choice == 'l':
+            subprocess.Popen(r'explorer /select,"C:\Users\ssubhra\Desktop\Git repositories\Godly-Networking-Scripts\QualysAPIFinal\Logs\ApiLogs"')
+            
         if choice=='x':
             exit()
 
@@ -105,7 +109,7 @@ def chooser():
 def chooser_d():
     with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
         dataA=dA.read()
-    with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+    with open("QualysAPIFinal/data/dataB.txt",'r') as dB:
         dataB=dB.read()
 
 
@@ -122,17 +126,20 @@ def chooser_d():
 def chooser_c():
     with open("QualysAPIFinal/data/dataA.txt",'r') as dA:
         dataA=dA.read()
-    with open("QualysAPIFinal/data/dataA.txt",'r') as dB:
+    with open("QualysAPIFinal/data/dataB.txt",'r') as dB:
         dataB=dB.read()
     modulechooser=input("""Modules to Update:
-                                b=Both VM and PC
-                                vm= Only VM
-                                pc=Only PC""")
+                                b = Both VM and PC
+                                vm = Only VM
+                                pc = Only PC
+                                
+                                ==> """)
     enable_vm = '1' if modulechooser in ['b', 'vm'] else '0'
     enable_pc = '1' if modulechooser in ['b', 'pc'] else '0'
 
-    add_ip(USERNAME,PASSWORD,dataA,enable_vm,enable_pc,file_id=f'{file_id}_A')
-    add_ip(USERNAME,PASSWORD,dataB,enable_vm,enable_pc,file_id=f'{file_id}_B')
+    add_ip(USERNAME,PASSWORD,dataA,f'{file_id}_A',enable_vm,enable_pc)
+    print("set_a")
+    add_ip(USERNAME,PASSWORD,dataB,f'{file_id}_B',enable_vm,enable_pc)
     print("ips added to host asset")   
 #================================== ===
 
