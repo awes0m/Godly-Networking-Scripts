@@ -33,7 +33,6 @@ def add_auth_unix(USERNAME,PASSWORD,unique_id,ipdata,file_id):
     headers = {
         'X-Requested-With': 'curl',
     }
-    iplist = open('processed_list.csv','rb').read()
 
     params = {
         'action':'update',

@@ -79,7 +79,7 @@ def chooser():
                                 u = Unix
                                 
                                 ==>""")
-            uniqueid=input("Enter Uniquie ID of Authentication record")
+            uniqueid=input("Enter Uniquie ID of Authentication record  ")
 
             if oschooser== 'w':
                 auth_add_windows(USERNAME,PASSWORD,uniqueid,dataA,file_id=f'{file_id}_A')
