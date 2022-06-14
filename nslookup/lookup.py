@@ -20,13 +20,13 @@ def action():
             try:
                 val=socket.gethostbyaddr(entry.get())
                 k=val[0]
-            except:
+            except Exception:
                 messagebox.showwarning(title="Invalid Entry!",message="Please enter Valid IP Address")
             r_entry.insert(0,k)
         elif radio_state.get() == 2: #host to ip
             try:
                 val=socket.gethostbyname(entry.get())
-            except:
+            except Exception:
                 messagebox.showwarning(title="Invalid Entry!",message="Please enter Valid Hostname")
             r_entry.insert(0,val)
         else:
