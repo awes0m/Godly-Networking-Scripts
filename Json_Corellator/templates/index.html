@@ -1,0 +1,484 @@
+<!-- # HTML template for the web page -->
+<!-- # This template includes Tailwind CSS for styling and JavaScript for JSON parsing and visualization. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Any Json Corellator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1600px; /* Increased max-width for multiple panes */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .input-output-sections-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow panes to wrap to the next line */
+            gap: 20px;
+            justify-content: center; /* Center panes horizontally */
+        }
+        .json-pane {
+            flex: 1 1 450px; /* Flex item: grow, shrink, base width of 450px */
+            min-width: 300px; /* Minimum width for small screens */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fcfcfc;
+        }
+        textarea {
+            min-height: 200px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo-500 */
+        }
+        button {
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+        button:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .json-viewer {
+            border: 1px solid #e2e8f0;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            min-height: 100px;
+        }
+        .json-node {
+            margin-left: 20px;
+            padding: 4px 0;
+            position: relative;
+        }
+        .json-node-key {
+            font-weight: 600;
+            color: #334155; /* Slate-700 */
+            cursor: pointer;
+            display: inline-block;
+            padding-right: 5px;
+        }
+        .json-node-key::before {
+            content: '►';
+            display: inline-block;
+            width: 1em;
+            margin-right: 5px;
+            transition: transform 0.1s;
+        }
+        .json-node-key.expanded::before {
+            content: '▼';
+            transform: rotate(0deg);
+        }
+        .json-node-value {
+            display: inline-block;
+            color: #475569; /* Slate-600 */
+        }
+        .json-node-value.string { color: #dc2626; /* Red-600 */ }
+        .json-node-value.number { color: #16a34a; /* Green-600 */ }
+        .json-node-value.boolean { color: #2563eb; /* Blue-600 */ }
+        .json-node-value.null { color: #64748b; /* Slate-500 */ }
+        .json-node-children {
+            border-left: 1px dotted #cbd5e1; /* Slate-300 */
+            margin-left: 10px;
+            padding-left: 10px;
+        }
+        .json-node-children.hidden {
+            display: none;
+        }
+        .json-array-item {
+            display: flex;
+            align-items: baseline;
+        }
+        .json-array-item::before {
+            content: '-';
+            margin-right: 8px;
+            color: #94a3b8;
+        }
+        .error-message {
+            color: #ef4444; /* Red-500 */
+            background-color: #fee2e2; /* Red-100 */
+            border: 1px solid #fca5a5; /* Red-300 */
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        /* Highlighting for similar values */
+        .highlight {
+            background-color: #dbeafe; /* Blue-100 */
+            border-radius: 4px;
+            padding: 1px 4px;
+            box-shadow: 0 0 0 2px #93c5fd; /* Blue-300 */
+        }
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .control-buttons button {
+            flex-grow: 1;
+            max-width: 300px;
+        }
+        .add-pane-button {
+            background-color: #10b981; /* Emerald-500 */
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+        .add-pane-button:hover {
+            background-color: #059669; /* Emerald-600 */
+        }
+        .compare-button {
+            background-color: #6366f1; /* Indigo-500 */
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+        .compare-button:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="main-container">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Multi-JSON Corellator</h1>
+        <h6><strong>Compare upto 4 Json and find their similarity(particularly helpful for Secuirty Incident Json Corelation)</strong></h6>
+
+        <div id="inputOutputSections" class="input-output-sections-container">
+            <!-- Initial JSON Pane 1 -->
+            <div class="json-pane" data-pane-id="0">
+                <h2 class="text-xl font-semibold text-gray-700">JSON 1</h2>
+                <textarea class="json-input w-full rounded-lg p-4 border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                          placeholder='Paste JSON 1 here, e.g., {"name": "Alice", "age": 30, "city": "New York", "hobbies": ["reading", "hiking"]}'></textarea>
+                <button class="visualize-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+                    Visualize JSON
+                </button>
+                <div class="error-message hidden"></div>
+                <div class="json-viewer">
+                    <p class="text-gray-500 text-center">JSON 1 visualization will appear here.</p>
+                </div>
+            </div>
+
+            <!-- Initial JSON Pane 2 -->
+            <div class="json-pane" data-pane-id="1">
+                <h2 class="text-xl font-semibold text-gray-700">JSON 2</h2>
+                <textarea class="json-input w-full rounded-lg p-4 border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                          placeholder='Paste JSON 2 here, e.g., {"name": "Bob", "age": 30, "city": "New York", "hobbies": ["reading", "cycling"]}'></textarea>
+                <button class="visualize-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+                    Visualize JSON
+                </button>
+                <div class="error-message hidden"></div>
+                <div class="json-viewer">
+                    <p class="text-gray-500 text-center">JSON 2 visualization will appear here.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-buttons">
+            <button id="addPaneBtn" class="add-pane-button text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+                Add JSON Pane
+            </button>
+            <button id="compareBtn" class="compare-button text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+                Compare & Highlight Similarities
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Array to store maps of value elements for each JSON pane
+        // Each element in this array will be an object like { path: DOM_element }
+        let allValueElementsMaps = [];
+        let allJsonData = []; // To store parsed JSON data for comparison
+        let paneCounter = 2; // Start counter for new panes
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputOutputSectionsContainer = document.getElementById('inputOutputSections');
+            const addPaneBtn = document.getElementById('addPaneBtn');
+            const compareBtn = document.getElementById('compareBtn');
+
+            // Initialize the first two panes
+            initializePane(0);
+            initializePane(1);
+
+            addPaneBtn.addEventListener('click', addJsonPane);
+            compareBtn.addEventListener('click', compareAndHighlight);
+
+            function initializePane(paneId) {
+                // Ensure the allValueElementsMaps and allJsonData arrays are sized correctly
+                if (!allValueElementsMaps[paneId]) {
+                    allValueElementsMaps[paneId] = {};
+                }
+                if (!allJsonData[paneId]) {
+                    allJsonData[paneId] = null;
+                }
+
+                const pane = document.querySelector(`.json-pane[data-pane-id="${paneId}"]`);
+                const visualizeBtn = pane.querySelector('.visualize-btn');
+                visualizeBtn.addEventListener('click', () => visualizeJson(paneId));
+            }
+
+            function addJsonPane() {
+                const newPaneId = paneCounter++;
+                const newPane = document.createElement('div');
+                newPane.classList.add('json-pane');
+                newPane.setAttribute('data-pane-id', newPaneId);
+                newPane.innerHTML = `
+                    <h2 class="text-xl font-semibold text-gray-700">JSON ${newPaneId + 1}</h2>
+                    <textarea class="json-input w-full rounded-lg p-4 border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                              placeholder='Paste JSON ${newPaneId + 1} here'></textarea>
+                    <button class="visualize-btn bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:-translate-y-1">
+                        Visualize JSON
+                    </button>
+                    <div class="error-message hidden"></div>
+                    <div class="json-viewer">
+                        <p class="text-gray-500 text-center">JSON ${newPaneId + 1} visualization will appear here.</p>
+                    </div>
+                `;
+                inputOutputSectionsContainer.appendChild(newPane);
+                initializePane(newPaneId); // Initialize event listener for the new pane
+            }
+
+            function visualizeJson(paneId) {
+                const pane = document.querySelector(`.json-pane[data-pane-id="${paneId}"]`);
+                const jsonInput = pane.querySelector('.json-input');
+                const jsonViewer = pane.querySelector('.json-viewer');
+                const errorMessage = pane.querySelector('.error-message');
+
+                const jsonString = jsonInput.value.trim();
+                jsonViewer.innerHTML = ''; // Clear previous visualization
+                errorMessage.classList.add('hidden'); // Hide any previous error
+
+                // Clear previous highlights and element map for this pane
+                allValueElementsMaps[paneId] = {};
+                allJsonData[paneId] = null;
+                clearAllHighlights(); // Clear highlights from all viewers before re-visualizing
+
+                if (!jsonString) {
+                    jsonViewer.innerHTML = `<p class="text-gray-500 text-center">JSON ${paneId + 1} visualization will appear here.</p>`;
+                    return;
+                }
+
+                try {
+                    const jsonData = JSON.parse(jsonString);
+                    allJsonData[paneId] = jsonData; // Store parsed data
+                    const rootNode = createNode(jsonData, null, 'root', allValueElementsMaps[paneId]);
+                    jsonViewer.appendChild(rootNode);
+                } catch (error) {
+                    errorMessage.textContent = 'Invalid JSON: ' + error.message;
+                    errorMessage.classList.remove('hidden');
+                    jsonViewer.innerHTML = `<p class="text-gray-500 text-center">Please correct JSON ${paneId + 1} and try again.</p>`;
+                }
+            }
+
+            // Modified createNode to store references to value elements
+            function createNode(data, key = null, parentPath = '', valueElementsMap) {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.classList.add('json-node');
+
+                // Adjust path for array items to be like root.array[0]
+                const currentPath = (key !== null && key.startsWith('[')) ? `${parentPath}${key}` : (key !== null ? `${parentPath}.${key}` : parentPath);
+
+                let keySpan;
+                if (key !== null) {
+                    keySpan = document.createElement('span');
+                    keySpan.classList.add('json-node-key');
+                    // Remove leading dot for root children if path starts with 'root.'
+                    keySpan.textContent = key.startsWith('[') ? key : (key.startsWith('.') ? key.substring(1) : key);
+                    nodeDiv.appendChild(keySpan);
+                }
+
+                if (typeof data === 'object' && data !== null) {
+                    const isArray = Array.isArray(data);
+                    const typeIndicator = isArray ? `[${data.length}]` : `{${Object.keys(data).length}}`;
+
+                    if (keySpan) {
+                         keySpan.textContent += `: ${typeIndicator}`;
+                         keySpan.classList.add('expanded'); // Start expanded
+                    } else { // For the root node if no key
+                         const rootKeyIndicator = document.createElement('span');
+                         rootKeyIndicator.classList.add('json-node-key', 'expanded');
+                         rootKeyIndicator.textContent = isArray ? `Array (${data.length})` : `Object (${Object.keys(data).length})`;
+                         nodeDiv.appendChild(rootKeyIndicator);
+                         keySpan = rootKeyIndicator; // Make root clickable
+                    }
+
+                    const childrenDiv = document.createElement('div');
+                    childrenDiv.classList.add('json-node-children');
+                    nodeDiv.appendChild(childrenDiv);
+
+                    if (keySpan) {
+                        keySpan.addEventListener('click', () => {
+                            childrenDiv.classList.toggle('hidden');
+                            keySpan.classList.toggle('expanded');
+                        });
+                    }
+
+                    if (isArray) {
+                        data.forEach((item, index) => {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.classList.add('json-array-item');
+                            // For array items, use the index as part of the path
+                            itemDiv.appendChild(createNode(item, `[${index}]`, currentPath, valueElementsMap));
+                            childrenDiv.appendChild(itemDiv);
+                        });
+                    } else {
+                        for (const k in data) {
+                            if (Object.hasOwnProperty.call(data, k)) {
+                                childrenDiv.appendChild(createNode(data[k], k, currentPath, valueElementsMap));
+                            }
+                        }
+                    }
+                } else {
+                    const valueSpan = document.createElement('span');
+                    valueSpan.classList.add('json-node-value');
+                    valueSpan.textContent = JSON.stringify(data); // Stringify to handle null/boolean correctly
+
+                    if (data === null) {
+                        valueSpan.classList.add('null');
+                    } else if (typeof data === 'string') {
+                        valueSpan.classList.add('string');
+                    } else if (typeof data === 'number') {
+                        valueSpan.classList.add('number');
+                    } else if (typeof data === 'boolean') {
+                        valueSpan.classList.add('boolean');
+                    }
+                    if (keySpan) {
+                        keySpan.textContent += ': '; // Add colon for key-value pairs
+                    }
+                    nodeDiv.appendChild(valueSpan);
+
+                    // Store reference to this value element using its path
+                    valueElementsMap[currentPath] = valueSpan;
+                }
+                return nodeDiv;
+            }
+
+            function clearAllHighlights() {
+                // Remove highlight class from all elements in all viewers
+                document.querySelectorAll('.json-node-value.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+            }
+
+            function compareAndHighlight() {
+                clearAllHighlights(); // Clear existing highlights before comparing
+
+                // Filter out null entries from allJsonData (for panes that haven't been visualized yet)
+                const validJsonData = allJsonData.filter(data => data !== null);
+                if (validJsonData.length < 2) {
+                    alert('Please visualize at least two JSONs to compare.'); // Using alert for simplicity, consider custom modal
+                    return;
+                }
+
+                // Map to store all values found at a specific path across all JSONs
+                // Format: { 'path': [ { value: '...', paneId: 0, element: DOM_element }, ... ] }
+                const valuesByPath = {};
+
+                // Recursive function to collect all primitive values and their elements
+                function collectValues(data, valueElementsMap, currentPath, paneId) {
+                    if (typeof data === 'object' && data !== null) {
+                        if (Array.isArray(data)) {
+                            data.forEach((item, index) => {
+                                collectValues(item, valueElementsMap, `${currentPath}[${index}]`, paneId);
+                            });
+                        } else {
+                            for (const key in data) {
+                                if (Object.hasOwnProperty.call(data, key)) {
+                                    collectValues(data[key], valueElementsMap, `${currentPath}.${key}`, paneId);
+                                }
+                            }
+                        }
+                    } else {
+                        // This is a primitive value
+                        if (!valuesByPath[currentPath]) {
+                            valuesByPath[currentPath] = [];
+                        }
+                        valuesByPath[currentPath].push({
+                            value: data,
+                            paneId: paneId,
+                            element: valueElementsMap[currentPath] // Get the stored DOM element
+                        });
+                    }
+                }
+
+                // Iterate through all loaded JSONs and collect their values
+                allJsonData.forEach((data, index) => {
+                    if (data !== null) {
+                        collectValues(data, allValueElementsMaps[index], 'root', index);
+                    }
+                });
+
+                // Now, iterate through collected valuesByPath and highlight similarities
+                for (const path in valuesByPath) {
+                    if (Object.hasOwnProperty.call(valuesByPath, path)) {
+                        const entriesAtPath = valuesByPath[path];
+
+                        // Group entries by their value
+                        const valueGroups = {};
+                        entriesAtPath.forEach(entry => {
+                            const stringifiedValue = JSON.stringify(entry.value); // Use stringified value for consistent comparison
+                            if (!valueGroups[stringifiedValue]) {
+                                valueGroups[stringifiedValue] = [];
+                            }
+                            valueGroups[stringifiedValue].push(entry.element);
+                        });
+
+                        // If a group has more than one element, it means the value is duplicated at this path
+                        for (const stringifiedValue in valueGroups) {
+                            if (Object.hasOwnProperty.call(valueGroups, stringifiedValue)) {
+                                const elementsToHighlight = valueGroups[stringifiedValue];
+                                if (elementsToHighlight.length > 1) {
+                                    elementsToHighlight.forEach(el => {
+                                        if (el) { // Ensure element exists
+                                            el.classList.add('highlight');
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+"""

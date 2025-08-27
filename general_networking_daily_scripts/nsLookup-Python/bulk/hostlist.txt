@@ -1,0 +1,4 @@
+google.com
+facebook.com
+apple.com
+amazon.com

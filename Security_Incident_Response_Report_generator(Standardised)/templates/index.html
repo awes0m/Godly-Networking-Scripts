@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Incident Response Worksheet Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #004085;
+        }
+        .collapsible {
+            background-color: #e9ecef;
+            color: #495057;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            margin-top: 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .collapsible:hover, .collapsible.active {
+            background-color: #d3d9df;
+        }
+        .collapsible:after {
+            content: '+';
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+        .collapsible.active:after {
+            content: "-";
+        }
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        input[type="text"], input[type="datetime-local"], select, textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, select:focus, textarea:focus, input[type="file"]:focus {
+            border-color: #80bdff;
+            outline: none;
+        }
+        input[type="file"] {
+            padding: 3px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-add {
+            background-color: #28a745;
+        }
+        .btn-add:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-save {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-save:hover {
+            background-color: #e0a800;
+        }
+        .btn-load {
+            background-color: #17a2b8;
+        }
+        .btn-load:hover {
+            background-color: #138496;
+        }
+        .btn-group {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn-group .btn {
+            margin: 0 5px;
+        }
+        .save-load-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        #file-list {
+            margin-top: 8px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .notification {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            display: none;
+        }
+        .notification.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .notification.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .notification.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        #savedFormsList {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: white;
+        }
+        .saved-form-item {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+        .saved-form-item:hover {
+            background-color: #e9ecef;
+        }
+        .saved-form-item.selected {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h6><strong>awes0m.github.io</strong></h6>
+        <h1>Standard Incident Response Worksheet Generator</h1>
+        <h6>Process Reference - <a href="https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r2.pdf/">Computer SecurityIncident Handling Guide[NIST]</a></h6>
+
+        <div class="notification" id="notification"></div>
+
+        {% if data.validation_error %}
+        <div class="notification warning" style="display: block;">
+            {{ data.validation_error }}
+        </div>
+        {% endif %}
+
+        <div class="save-load-section">
+            <h3>Save/Load Form Data</h3>
+            <div class="form-group">
+                <label for="saveFormName">Save Form As:</label>
+                <input type="text" id="saveFormName" placeholder="Enter a name for this form...">
+                <button type="button" class="btn btn-save" onclick="saveFormData()">Save Form</button>
+            </div>
+            <div class="form-group">
+                <label>Load Saved Form:</label>
+                <button type="button" class="btn btn-load" onclick="loadSavedForms()">Refresh Saved Forms</button>
+                <div id="savedFormsList"></div>
+                <button type="button" class="btn btn-load" onclick="loadSelectedForm()" id="loadFormBtn" style="display:none;">Load Selected Form</button>
+            </div>
+        </div>
+
+        <form action="/" method="post" enctype="multipart/form-data" id="incidentForm">
+            
+            <button type="button" class="collapsible active">1. Triage & Initial Assessment</button>
+            <div class="content" style="max-height: 500px;">
+                <div class="form-group">
+                    <label for="incident_id">Incident ID:</label>
+                    <input type="text" id="incident_id" name="incident_id" value="{{ data.incident_id }}">
+                </div>
+                <div class="form-group">
+                    <label for="reported_by">Reported By:</label>
+                    <input type="text" id="reported_by" name="reported_by" value="{{ data.reported_by }}">
+                </div>
+                <div class="form-group">
+                    <label for="date_reported">Date/Time Reported (UTC):</label>
+                    <input type="datetime-local" id="date_reported" name="date_reported" value="{{ data.date_reported }}">
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority Level:</label>
+                    <select id="priority" name="priority">
+                        <option value="Low" {% if data.priority == 'Low' %}selected{% endif %}>Low</option>
+                        <option value="Medium" {% if data.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="High" {% if data.priority == 'High' %}selected{% endif %}>High</option>
+                        <option value="Critical" {% if data.priority == 'Critical' %}selected{% endif %}>Critical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="summary">Initial Summary of Incident:</label>
+                    <textarea id="summary" name="summary">{{ data.summary }}</textarea>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible">2. Identification & Scoping</button>
+            <div class="content">
+                <table id="identification_table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time (UTC)</th>
+                            <th>Host/Asset</th>
+                            <th>Source IP</th>
+                            <th>Destination IP</th>
+                            <th>Event/Observation</th>
+                            <th>Analyst Notes</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-add" onclick="addRow('identification_table')">Add Row</button>
+                <div class="form-group">
+                    <label for="scope_summary">Summary of Scope:</label>
+                    <textarea id="scope_summary" name="scope_summary"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="iocs">Indicators of Compromise (IoCs):</label>
+                    <textarea id="iocs" name="iocs" placeholder="File Hashes, IPs, Domains, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="screenshots">Attach Screenshots/Evidence (for DOCX export):</label>
+                    <input type="file" id="screenshots" name="screenshots" multiple accept="image/*" onchange="updateFileList()">
+                    <div id="file-list"></div>
+                </div>
+            </div>
+            
+            <button type="button" class="collapsible">3. Containment</button>
+            <div class="content">
+                <table id="containment_table">
+                     <thead>
+                        <tr>
+                            <th>Date/Time (UTC)</th>
+                            <th>Action Taken</th>
+                            <th>Performed By</th>
+                            <th>System/Asset</th>
+                            <th>Outcome/Result</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" class="btn btn-add" onclick="addRow('containment_table')">Add Row</button>
+                <div class="form-group">
+                    <label for="containment_strategy">Containment Strategy:</label>
+                    <textarea id="containment_strategy" name="containment_strategy"></textarea>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible">4. Eradication</button>
+            <div class="content">
+                <table id="eradication_table">
+                     <thead>
+                        <tr>
+                            <th>Date/Time (UTC)</th>
+                            <th>Action Taken</th>
+                            <th>Performed By</th>
+                            <th>System/Asset</th>
+                            <th>Outcome/Result</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" class="btn btn-add" onclick="addRow('eradication_table')">Add Row</button>
+                <div class="form-group">
+                    <label for="eradication_summary">Eradication Summary:</label>
+                    <textarea id="eradication_summary" name="eradication_summary"></textarea>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible">5. Recovery</button>
+            <div class="content">
+                <table id="recovery_table">
+                     <thead>
+                        <tr>
+                            <th>Date/Time (UTC)</th>
+                            <th>Action Taken</th>
+                            <th>Performed By</th>
+                            <th>System/Asset</th>
+                            <th>Validation Steps</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" class="btn btn-add" onclick="addRow('recovery_table')">Add Row</button>
+                <div class="form-group">
+                    <label for="recovery_plan">Recovery Plan & Validation:</label>
+                    <textarea id="recovery_plan" name="recovery_plan"></textarea>
+                </div>
+            </div>
+
+            <button type="button" class="collapsible">6. Post-Incident Activities</button>
+            <div class="content">
+                <div class="form-group">
+                    <label for="timeline_summary">Incident Timeline Summary:</label>
+                    <textarea id="timeline_summary" name="timeline_summary"></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="root_cause">Root Cause Analysis:</label>
+                    <textarea id="root_cause" name="root_cause"></textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="lessons_learned">Lessons Learned:</label>
+                    <textarea id="lessons_learned" name="lessons_learned" placeholder="What went well? What could be improved?"></textarea>
+                </div>
+                <table id="actions_table">
+                     <thead>
+                        <tr>
+                            <th>Action Item</th>
+                            <th>Assigned To</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" class="btn btn-add" onclick="addRow('actions_table')">Add Row</button>
+            </div>
+
+            <button type="button" class="collapsible">7. Conclusion</button>
+            <div class="content">
+                <div class="form-group">
+                    <label for="conclusion_classification">Incident Classification: <span style="color: red;">*</span></label>
+                    <select id="conclusion_classification" name="conclusion_classification" required>
+                        <option value="" selected disabled>Select Classification</option>
+                        <option value="True Positive">True Positive</option>
+                        <option value="True Negative">True Negative</option>
+                        <option value="False Positive">False Positive</option>
+                        <option value="False Negative">False Negative</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="conclusion_summary">Conclusion Summary: <span style="color: red;">*</span></label>
+                    <textarea id="conclusion_summary" name="conclusion_summary" placeholder="Provide a final summary of the investigation and the reasoning for the classification." required></textarea>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" name="action" value="download_md" class="btn" onclick="return validateForm()">Download as Markdown</button>
+                <button type="submit" name="action" value="download_docx" class="btn" onclick="return validateForm()">Download as DOCX</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let selectedFormId = null;
+
+        // JavaScript for collapsible sections
+        var coll = document.getElementsByClassName("collapsible");
+        for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } 
+            });
+        }
+
+        // Validate form before download
+        function validateForm() {
+            const classification = document.getElementById('conclusion_classification').value;
+            const summary = document.getElementById('conclusion_summary').value.trim();
+            
+            if (!classification || !summary) {
+                showNotification('Please complete the Conclusion section before downloading. Both Incident Classification and Conclusion Summary are required.', 'warning');
+                
+                // Open the conclusion section if it's not already open
+                const conclusionCollapsible = document.querySelector('.collapsible:last-of-type');
+                const conclusionContent = conclusionCollapsible.nextElementSibling;
+                
+                if (!conclusionCollapsible.classList.contains('active')) {
+                    conclusionCollapsible.classList.add('active');
+                    conclusionContent.style.maxHeight = conclusionContent.scrollHeight + "px";
+                }
+                
+                // Focus on the first empty required field
+                if (!classification) {
+                    document.getElementById('conclusion_classification').focus();
+                } else if (!summary) {
+                    document.getElementById('conclusion_summary').focus();
+                }
+                
+                return false; // Prevent form submission
+            }
+            
+            return true; // Allow form submission
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Save form data
+        function saveFormData() {
+            const formName = document.getElementById('saveFormName').value;
+            if (!formName.trim()) {
+                showNotification('Please enter a name for the form', 'error');
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('incidentForm'));
+            const dataObject = {};
+            
+            // Convert FormData to object
+            formData.forEach((value, key) => {
+                if (dataObject[key]) {
+                    if (Array.isArray(dataObject[key])) {
+                        dataObject[key].push(value);
+                    } else {
+                        dataObject[key] = [dataObject[key], value];
+                    }
+                } else {
+                    dataObject[key] = value;
+                }
+            });
+
+            // Save table data
+            ['identification_table', 'containment_table', 'eradication_table', 'recovery_table', 'actions_table'].forEach(tableId => {
+                const table = document.getElementById(tableId);
+                const rows = table.getElementsByTagName('tbody')[0].rows;
+                const tableData = [];
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const rowData = [];
+                    const inputs = rows[i].getElementsByTagName('input');
+                    for (let j = 0; j < inputs.length; j++) {
+                        rowData.push(inputs[j].value);
+                    }
+                    if (rowData.some(cell => cell.trim() !== '')) {
+                        tableData.push(rowData);
+                    }
+                }
+                dataObject[tableId + '_data'] = tableData;
+            });
+
+            fetch('/save_form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formName,
+                    data: dataObject
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Form saved successfully!', 'success');
+                    document.getElementById('saveFormName').value = '';
+                    loadSavedForms();
+                } else {
+                    showNotification('Error saving form: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error saving form: ' + error, 'error');
+            });
+        }
+
+        // Load saved forms list
+        function loadSavedForms() {
+            fetch('/get_saved_forms')
+            .then(response => response.json())
+            .then(data => {
+                const listContainer = document.getElementById('savedFormsList');
+                listContainer.innerHTML = '';
+                
+                if (data.forms && data.forms.length > 0) {
+                    data.forms.forEach(form => {
+                        const formItem = document.createElement('div');
+                        formItem.className = 'saved-form-item';
+                        formItem.textContent = `${form.name} (${form.date})`;
+                        formItem.onclick = () => selectForm(form.id, formItem);
+                        listContainer.appendChild(formItem);
+                    });
+                } else {
+                    listContainer.innerHTML = '<p>No saved forms found.</p>';
+                }
+            })
+            .catch(error => {
+                showNotification('Error loading saved forms: ' + error, 'error');
+            });
+        }
+
+        // Select a form
+        function selectForm(formId, element) {
+            // Remove previous selection
+            document.querySelectorAll('.saved-form-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current item
+            element.classList.add('selected');
+            selectedFormId = formId;
+            document.getElementById('loadFormBtn').style.display = 'inline-block';
+        }
+
+        // Load selected form
+        function loadSelectedForm() {
+            if (!selectedFormId) {
+                showNotification('Please select a form to load', 'error');
+                return;
+            }
+
+            fetch(`/load_form/${selectedFormId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateForm(data.data);
+                    showNotification('Form loaded successfully!', 'success');
+                } else {
+                    showNotification('Error loading form: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Error loading form: ' + error, 'error');
+            });
+        }
+
+        // Populate form with loaded data
+        function populateForm(data) {
+            // Clear existing form
+            document.getElementById('incidentForm').reset();
+            
+            // Clear all tables
+            ['identification_table', 'containment_table', 'eradication_table', 'recovery_table', 'actions_table'].forEach(tableId => {
+                const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+                tbody.innerHTML = '';
+            });
+
+            // Populate regular form fields
+            Object.keys(data).forEach(key => {
+                if (!key.endsWith('_data')) {
+                    const element = document.getElementById(key) || document.querySelector(`[name="${key}"]`);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                }
+            });
+
+            // Populate tables
+            ['identification_table', 'containment_table', 'eradication_table', 'recovery_table', 'actions_table'].forEach(tableId => {
+                const tableData = data[tableId + '_data'];
+                if (tableData && tableData.length > 0) {
+                    tableData.forEach(rowData => {
+                        addRow(tableId);
+                        const tbody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+                        const lastRow = tbody.rows[tbody.rows.length - 1];
+                        const inputs = lastRow.getElementsByTagName('input');
+                        
+                        for (let i = 0; i < inputs.length && i < rowData.length; i++) {
+                            inputs[i].value = rowData[i];
+                        }
+                    });
+                } else {
+                    // Add one empty row if no data
+                    addRow(tableId);
+                }
+            });
+        }
+
+        // JavaScript for adding/removing table rows
+        function addRow(tableId) {
+            const table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const headers = document.getElementById(tableId).getElementsByTagName('th');
+            
+            for (let i = 0; i < headers.length; i++) {
+                const newCell = newRow.insertCell(i);
+                if (i === headers.length - 1) {
+                    newCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>';
+                } else {
+                    let inputName = `${tableId}_${table.rows.length - 1}_${i}`;
+                    let inputType = 'text';
+                    if (headers[i].innerText.toLowerCase().includes('date/time')) {
+                        inputType = 'datetime-local';
+                    }
+                    newCell.innerHTML = `<input type="${inputType}" name="${inputName}" class="table-input">`;
+                }
+            }
+            
+            const contentDiv = table.closest('.content');
+            if (contentDiv.style.maxHeight) {
+                 contentDiv.style.maxHeight = contentDiv.scrollHeight + newRow.scrollHeight + "px";
+            }
+        }
+
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            const contentDiv = row.closest('.content');
+            const rowHeight = row.scrollHeight;
+            row.parentNode.removeChild(row);
+            
+            if (contentDiv.style.maxHeight) {
+                 contentDiv.style.maxHeight = (contentDiv.scrollHeight - rowHeight) + "px";
+            }
+        }
+        
+        // Add one initial row to each table on page load
+        window.onload = function() {
+            addRow('identification_table');
+            addRow('containment_table');
+            addRow('eradication_table');
+            addRow('recovery_table');
+            addRow('actions_table');
+            loadSavedForms();
+        };
+
+        // JavaScript to display selected filenames
+        function updateFileList() {
+            const input = document.getElementById('screenshots');
+            const listDiv = document.getElementById('file-list');
+            listDiv.innerHTML = '';
+            if (input.files.length > 0) {
+                const fileNames = Array.from(input.files).map(f => f.name).join(', ');
+                listDiv.textContent = `Selected: ${fileNames}`;
+            }
+        }
+    </script>
+</body>
+<footer><center><h6>© A Open Source Product @2025 by awes0m.github.io.</h6></center></footer>
+</html>
