@@ -1,14 +1,14 @@
-# Godly Networking Scripts Collection
+# (Godly Networking Scripts Collection)[https://github.com/awes0m/Godly-Networking-Scripts]
 
 A comprehensive collection of networking utilities and security tools designed for network administrators, security analysts, and IT professionals. This repository contains three main categories of tools: general networking scripts, JSON correlation utilities, and security incident response generators.
 
 ## 📁 Repository Structure
 
-### 1. General Networking Daily Scripts (`general_networking_daily_scripts/`)
+### 1. General Networking Daily Scripts (`general_networking_daily_scripts/`)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/general_networking_daily_scripts]
 
 A collection of PowerShell and Python scripts for common networking tasks and diagnostics.
 
-#### 🔍 **Bulk Traceroute Tool**
+#### (🔍 **Bulk Traceroute Tool**)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/general_networking_daily_scripts/bulk%20traceroute]
 
 - **File**: `bulk traceroute/traceroute.ps1`
 - **Language**: PowerShell
@@ -22,7 +22,7 @@ A collection of PowerShell and Python scripts for common networking tasks and di
 
 #### 🌐 **NSLookup Tools**
 
-##### PowerShell NSLookup (Hostname to IP)
+##### (PowerShell NSLookup (Hostname to IP))[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/general_networking_daily_scripts/NSLOOKUP%20hostname%20to%20ip]
 
 - **File**: `nsLookup-Powershell/NSLOOKUP hostname to ip/nslookup-hostnsame-ip.ps1`
 - **Language**: PowerShell
@@ -33,7 +33,7 @@ A collection of PowerShell and Python scripts for common networking tasks and di
   - Handles DNS resolution failures gracefully
   - Automatic result file opening
 
-##### Python NSLookup Tools
+##### (Python NSLookup Tools)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/general_networking_daily_scripts/nsLookup-Python]
 
 - **Bulk NSLookup**: `nsLookup-Python/bulk/multi_nslookup.py`
 
@@ -54,7 +54,7 @@ A collection of PowerShell and Python scripts for common networking tasks and di
     - Input validation and error messaging
     - Real-time result display
 
-#### 📡 **Ping and Status Finder**
+#### 📡 (**Ping and Status Finder**)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/general_networking_daily_scripts/Ping%20and%20Status%20finder]
 
 - **File**: `Ping and Status finder/ping only.ps1`
 - **Language**: PowerShell
@@ -65,7 +65,7 @@ A collection of PowerShell and Python scripts for common networking tasks and di
   - CSV report generation with status indicators
   - Automatic result file opening
 
-### 2. JSON Correlator (`Json_Corellator/`)
+### 2. JSON Correlator (`Json_Corellator/`)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/Json_Corellator]
 
 A Flask-based web application for analyzing and correlating JSON data structures.
 
@@ -91,7 +91,7 @@ A Flask-based web application for analyzing and correlating JSON data structures
 - Data structure analysis
 - Forensic JSON examination
 
-### 3. Security Incident Response Report Generator (`Security_Incident_Response_Report_generator(Standardised)/`)
+### 3. Security Incident Response Report Generator (`Security_Incident_Response_Report_generator(Standardised)/`)[https://github.com/awes0m/Godly-Networking-Scripts/tree/main/Security_Incident_Response_Report_generator(Standardised)]
 
 A comprehensive Flask web application for creating standardized security incident response reports.
 
