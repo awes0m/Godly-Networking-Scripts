@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Incident Report Generator</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons for a clean icon set -->
+    <script src="https://unpkg.com/lucide-react@0.292.0/dist/lucide-react.js"></script>
+    <!-- Libraries for DOCX export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+    <style>
+        /* Custom scrollbar and font styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Style for active tab */
+        .tab-active {
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+            border-left-color: #0369a1;
+        }
+        /* Style for input fields */
+        .form-input, .form-select, .form-textarea {
+            @apply w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition;
+        }
+    </style>
+     <!-- Google Fonts for a clean, modern typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white border-r border-slate-200 p-4 md:p-6 space-y-4">
+            <h1 class="text-xl font-bold text-sky-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M15.75 2.25H8.25A2.25 2.25 0 0 0 6 4.5v15A2.25 2.25 0 0 0 8.25 21.75h7.5A2.25 2.25 0 0 0 18 19.5V4.5A2.25 2.25 0 0 0 15.75 2.25Z"/><path d="M12 18.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"/><path d="M12 6.75h.007v.008H12V6.75Z"/></svg>
+                Incident Reporter
+            </h1>
+            <nav id="tabs" class="space-y-2">
+                <!-- Tab links will be dynamically generated here -->
+            </nav>
+            
+            <div class="pt-4 border-t border-slate-200">
+                <h2 class="font-semibold text-slate-600 mb-2">Tools & Resources</h2>
+                <div class="space-y-2 text-sm">
+                    <a href="https://www.virustotal.com/" target="_blank" class="flex items-center text-slate-500 hover:text-sky-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        VirusTotal
+                    </a>
+                    <a href="https://who.is/" target="_blank" class="flex items-center text-slate-500 hover:text-sky-600 transition">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        WHOIS Lookup
+                    </a>
+                     <a href="https://mxtoolbox.com/" target="_blank" class="flex items-center text-slate-500 hover:text-sky-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        MXToolBox
+                    </a>
+                    <a href="https://urlscan.io/" target="_blank" class="flex items-center text-slate-500 hover:text-sky-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></svg>
+                        URLScan.io
+                    </a>
+                     <a href="https://attack.mitre.org/" target="_blank" class="flex items-center text-slate-500 hover:text-sky-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="m21.21 15.89-1.42-1.42"/><path d="m15.89 21.21-1.42-1.42"/><path d="M12 18a6 6 0 0 0 6-6"/><path d="M6 6a6 6 0 0 0 6 6"/><path d="M3 3l18 18"/></svg>
+                        MITRE ATT&CK
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 md:p-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <!-- Header with Presets and Export Options -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-200">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Create Incident Report</h2>
+                        <p class="text-sm text-slate-500">Fill out the details below. Reference: <a href="https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-61r2.pdf" target="_blank" class="text-sky-600 hover:underline">NIST SP 800-61r2</a></p>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                         <div class="relative">
+                            <button id="presets-button" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition text-sm font-semibold flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><wand-2/></svg>
+                                Presets
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <div id="presets-dropdown" class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-md shadow-lg z-10 hidden">
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" data-preset="phishing">Phishing Email</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" data-preset="malware">Malware Outbreak</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" data-preset="unauthorized">Unauthorized Access</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" data-preset="ransomware">Ransomware Attack</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100" data-preset="dos">Denial of Service</a>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button id="export-button" class="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition text-sm font-semibold flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><share-2/></svg>
+                                Export
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <div id="export-dropdown" class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-md shadow-lg z-10 hidden">
+                                <a href="#" id="copy-markdown-btn" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Copy as Markdown</a>
+                                <a href="#" id="copy-text-btn" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Copy as Formatted Text</a>
+                                <a href="#" id="download-docx-btn" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Download as DOCX</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="incidentForm" class="space-y-8">
+                    <!-- Form sections will be dynamically generated here -->
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg text-sm transition-opacity duration-300 opacity-0 pointer-events-none">
+        Notification message
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DATA STRUCTURE & CONFIG ---
+            const formSections = {
+                triage: {
+                    title: 'Triage & Assessment',
+                    icon: 'siren',
+                    fields: [
+                        { id: 'incident_id', label: 'Incident ID', type: 'text' },
+                        { id: 'reported_by', label: 'Reported By', type: 'text', placeholder: 'e.g., Jane Doe, SOC Alert' },
+                        { id: 'date_reported', label: 'Date/Time Reported (UTC)', type: 'datetime-local' },
+                        { id: 'priority', label: 'Priority Level', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] },
+                        { id: 'summary', label: 'Initial Summary', type: 'textarea', placeholder: 'A brief, one-line summary of the incident.' }
+                    ]
+                },
+                identification: {
+                    title: 'Identification & Scoping',
+                    icon: 'search',
+                    fields: [
+                        { id: 'identification_table', label: 'Timeline of Events', type: 'table', headers: ['Date/Time (UTC)', 'Host/Asset', 'Source IP', 'Destination IP', 'Event/Observation', 'Analyst Notes'] },
+                        { id: 'scope_summary', label: 'Summary of Scope', type: 'textarea', placeholder: 'Describe the extent of the incident. How many systems, users, or accounts are affected?' },
+                        { id: 'iocs', label: 'Indicators of Compromise (IoCs)', type: 'textarea', placeholder: 'One per line: file hashes, IP addresses, domains, etc.' }
+                    ]
+                },
+                containment: {
+                    title: 'Containment',
+                    icon: 'shield-off',
+                    fields: [
+                        { id: 'containment_table', label: 'Containment Actions', type: 'table', headers: ['Date/Time (UTC)', 'Action Taken', 'Performed By', 'System/Asset', 'Outcome/Result'] },
+                        { id: 'containment_strategy', label: 'Containment Strategy', type: 'textarea', placeholder: 'Describe the overall strategy for containing the incident (e.g., network segmentation, blocking IPs, disabling accounts).' }
+                    ]
+                },
+                eradication: {
+                    title: 'Eradication',
+                    icon: 'trash-2',
+                    fields: [
+                        { id: 'eradication_table', label: 'Eradication Actions', type: 'table', headers: ['Date/Time (UTC)', 'Action Taken', 'Performed By', 'System/Asset', 'Outcome/Result'] },
+                        { id: 'eradication_summary', label: 'Eradication Summary', type: 'textarea', placeholder: 'Summarize the steps taken to eliminate the threat from the environment.' }
+                    ]
+                },
+                recovery: {
+                    title: 'Recovery',
+                    icon: 'shield-check',
+                    fields: [
+                        { id: 'recovery_table', label: 'Recovery Actions', type: 'table', headers: ['Date/Time (UTC)', 'Action Taken', 'Performed By', 'System/Asset', 'Validation Steps'] },
+                        { id: 'recovery_plan', label: 'Recovery Plan & Validation', type: 'textarea', placeholder: 'Describe the plan to restore systems to normal operation and how their security will be validated.' }
+                    ]
+                },
+                post_incident: {
+                    title: 'Post-Incident',
+                    icon: 'book-open',
+                    fields: [
+                        { id: 'timeline_summary', label: 'Incident Timeline Summary', type: 'textarea', placeholder: 'A high-level summary of the incident from detection to recovery.' },
+                        { id: 'root_cause', label: 'Root Cause Analysis', type: 'textarea', placeholder: 'What was the fundamental reason the incident occurred? (e.g., unpatched vulnerability, weak password).' },
+                        { id: 'lessons_learned', label: 'Lessons Learned', type: 'textarea', placeholder: 'What went well? What could be improved in our processes or technology?' },
+                        { id: 'actions_table', label: 'Follow-up Actions', type: 'table', headers: ['Action Item', 'Assigned To', 'Due Date', 'Status'] }
+                    ]
+                },
+                conclusion: {
+                    title: 'Conclusion',
+                    icon: 'flag',
+                    fields: [
+                        { id: 'conclusion_classification', label: 'Incident Classification', type: 'select', options: ['', 'True Positive', 'False Positive', 'True Negative', 'False Negative'], required: true },
+                        { id: 'conclusion_summary', label: 'Conclusion Summary', type: 'textarea', placeholder: 'Provide a final summary of the investigation and the reasoning for the classification.', required: true }
+                    ]
+                }
+            };
+
+            const presets = {
+                phishing: {
+                    priority: 'Medium',
+                    summary: 'User reported a suspicious email with a malicious link.',
+                    scope_summary: 'Initial analysis suggests one user clicked the link. The scope is currently limited to that user\'s workstation.',
+                    containment_strategy: '1. Isolate the user\'s workstation from the network.\n2. Block the sender\'s domain and the malicious URL at the email gateway and web filter.\n3. Reset the user\'s password.',
+                    root_cause: 'User clicked on a malicious link in a phishing email.',
+                    lessons_learned: 'Security awareness training should be reinforced. Consider more advanced email filtering solutions.',
+                    conclusion_classification: 'True Positive',
+                    conclusion_summary: 'A user received and interacted with a phishing email. The workstation was isolated and credentials reset. The threat was contained.'
+                },
+                malware: {
+                    priority: 'High',
+                    summary: 'EDR alerted on malware execution on a server.',
+                    scope_summary: 'The malware was identified on one critical server. Network traffic analysis is underway to identify potential lateral movement.',
+                    containment_strategy: '1. Isolate the affected server.\n2. Block command-and-control (C2) domains/IPs identified from malware analysis.\n3. Run EDR scans on adjacent systems.',
+                    root_cause: 'Execution of malicious payload, initial access vector under investigation.',
+                    lessons_learned: 'Review EDR policies for preventative blocking. Improve server patching cadence.',
+                    conclusion_classification: 'True Positive',
+                    conclusion_summary: 'Malware infection detected and contained on a single server. Eradication is in progress. No evidence of data exfiltration found at this time.'
+                },
+                unauthorized: {
+                    priority: 'Critical',
+                    summary: 'Multiple failed login attempts followed by a successful login from an unrecognized IP address to an administrator account.',
+                    scope_summary: 'A single administrator account has been compromised. A review of the administrator\'s activity is ongoing to determine the scope of actions taken.',
+                    containment_strategy: '1. Immediately terminate all active sessions for the compromised account.\n2. Reset the account password and revoke API keys.\n3. Block the source IP address at the firewall.',
+                    root_cause: 'Compromised credentials, potentially via password spraying or credential stuffing.',
+                    lessons_learned: 'MFA must be enforced on all administrative accounts. Geofencing policies for logins should be implemented.',
+                    conclusion_classification: 'True Positive',
+                    conclusion_summary: 'Unauthorized access to an admin account was detected and the account was secured. Investigation into attacker activity is ongoing.'
+                },
+                ransomware: {
+                    priority: 'Critical',
+                    summary: 'Multiple systems are reporting encrypted files and displaying a ransom note.',
+                    scope_summary: 'File servers and several user workstations are confirmed affected. The ransomware appears to be spreading laterally.',
+                    containment_strategy: '1. Disconnect affected systems from the network immediately.\n2. Segment the network to prevent further spread.\n3. Suspend backup jobs to prevent encryption of backups. \n4. Identify the ransomware variant.',
+                    root_cause: 'Initial access likely via phishing email or unpatched public-facing service. Lateral movement via compromised credentials.',
+                    lessons_learned: 'Improve network segmentation. Enhance backup strategy with immutable storage. Review patch management process.',
+                    conclusion_classification: 'True Positive',
+                    conclusion_summary: 'Active ransomware outbreak. Containment is in progress. Recovery will proceed from offline backups once the environment is clean.'
+                },
+                dos: {
+                    priority: 'High',
+                    summary: 'The public website is unavailable or extremely slow to respond.',
+                    scope_summary: 'The company\'s primary web server and firewall are experiencing an abnormally high volume of traffic from a wide range of source IPs.',
+                    containment_strategy: '1. Engage with our upstream provider or DDoS mitigation service to block malicious traffic.\n2. Rate-limit incoming connections at the network edge.\n3. Temporarily scale up web server resources if possible.',
+                    root_cause: 'Distributed Denial of Service (DDoS) attack targeting our public web infrastructure (Layer 4/7).',
+                    lessons_learned: 'A pre-provisioned DDoS mitigation service is necessary for critical services. Develop a more robust scaling plan.',
+                    conclusion_classification: 'True Positive',
+                    conclusion_summary: 'The website is under a DDoS attack. Mitigation efforts have been initiated with our service provider. Service is beginning to stabilize.'
+                }
+            };
+
+            // --- UI INITIALIZATION ---
+            const tabsContainer = document.getElementById('tabs');
+            const formContainer = document.getElementById('incidentForm');
+
+            Object.keys(formSections).forEach((key, index) => {
+                const section = formSections[key];
+                
+                // Create tab link
+                const tabLink = document.createElement('a');
+                tabLink.href = `#${key}`;
+                tabLink.dataset.tab = key;
+                tabLink.className = `tab-link flex items-center px-4 py-2 text-slate-600 border-l-4 border-transparent hover:bg-slate-100 transition text-sm font-medium ${index === 0 ? 'tab-active' : ''}`;
+                tabLink.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><use href="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/${section.icon}.svg#${section.icon}" /></svg>
+                    ${section.title}
+                `;
+                tabsContainer.appendChild(tabLink);
+
+                // Create form section
+                const sectionDiv = document.createElement('div');
+                sectionDiv.id = key;
+                sectionDiv.className = `tab-content space-y-6 ${index > 0 ? 'hidden' : ''}`;
+                
+                section.fields.forEach(field => {
+                    const fieldGroup = document.createElement('div');
+                    const label = document.createElement('label');
+                    label.htmlFor = field.id;
+                    label.className = 'block text-sm font-semibold text-slate-700 mb-1';
+                    label.textContent = field.label;
+                    if (field.required) {
+                        label.innerHTML += ' <span class="text-red-500">*</span>';
+                    }
+                    fieldGroup.appendChild(label);
+
+                    switch(field.type) {
+                        case 'text':
+                        case 'datetime-local':
+                            const input = document.createElement('input');
+                            input.type = field.type;
+                            input.id = field.id;
+                            input.name = field.id;
+                            input.className = 'form-input';
+                            if (field.placeholder) input.placeholder = field.placeholder;
+                            fieldGroup.appendChild(input);
+                            break;
+                        case 'select':
+                            const select = document.createElement('select');
+                            select.id = field.id;
+                            select.name = field.id;
+                            select.className = 'form-select';
+                            field.options.forEach(opt => {
+                                const option = document.createElement('option');
+                                option.value = opt;
+                                option.textContent = opt || 'Select...';
+                                select.appendChild(option);
+                            });
+                            fieldGroup.appendChild(select);
+                            break;
+                        case 'textarea':
+                            const textarea = document.createElement('textarea');
+                            textarea.id = field.id;
+                            textarea.name = field.id;
+                            textarea.rows = 4;
+                            textarea.className = 'form-textarea';
+                            if (field.placeholder) textarea.placeholder = field.placeholder;
+                            fieldGroup.appendChild(textarea);
+                             break;
+                        case 'table':
+                            const tableContainer = document.createElement('div');
+                            const table = document.createElement('table');
+                            table.id = field.id;
+                            table.className = 'w-full text-sm text-left text-slate-500';
+                            table.innerHTML = `
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                    <tr>
+                                        ${field.headers.map(h => `<th scope="col" class="px-4 py-3">${h}</th>`).join('')}
+                                        <th scope="col" class="px-4 py-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            `;
+                            tableContainer.appendChild(table);
+                            const addButton = document.createElement('button');
+                            addButton.type = 'button';
+                            addButton.className = 'mt-2 px-3 py-1 bg-sky-100 text-sky-700 text-xs font-semibold rounded-md hover:bg-sky-200 transition flex items-center';
+                            addButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Add Row`;
+                            addButton.onclick = () => addTableRow(field.id, field.headers.length);
+                            tableContainer.appendChild(addButton);
+                            fieldGroup.appendChild(tableContainer);
+                            break;
+                    }
+                    sectionDiv.appendChild(fieldGroup);
+                });
+                formContainer.appendChild(sectionDiv);
+            });
+            
+            // --- INITIALIZE FORM STATE ---
+            setDefaultValues();
+            Object.keys(formSections).forEach(key => {
+                 const tableField = formSections[key].fields.find(f => f.type === 'table');
+                 if (tableField) {
+                     addTableRow(tableField.id, tableField.headers.length);
+                 }
+            });
+
+
+            // --- EVENT LISTENERS ---
+
+            // Tab navigation
+            document.querySelectorAll('.tab-link').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = tab.dataset.tab;
+
+                    document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('tab-active'));
+                    tab.classList.add('tab-active');
+
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.id === tabId ? content.classList.remove('hidden') : content.classList.add('hidden');
+                    });
+                });
+            });
+            
+            // Dropdown menus
+            setupDropdown('presets-button', 'presets-dropdown');
+            setupDropdown('export-button', 'export-dropdown');
+
+            // Preset functionality
+            document.querySelectorAll('#presets-dropdown a').forEach(presetLink => {
+                presetLink.addEventListener('click', e => {
+                    e.preventDefault();
+                    const presetData = presets[presetLink.dataset.preset];
+                    if (confirm('This will overwrite some fields. Are you sure?')) {
+                        Object.keys(presetData).forEach(key => {
+                            const field = document.getElementById(key);
+                            if (field) {
+                                field.value = presetData[key];
+                            }
+                        });
+                        showNotification('Preset loaded successfully!', 'success');
+                    }
+                     document.getElementById('presets-dropdown').classList.add('hidden');
+                });
+            });
+
+            // Export functionality
+            document.getElementById('copy-markdown-btn').addEventListener('click', handleExport('markdown'));
+            document.getElementById('copy-text-btn').addEventListener('click', handleExport('text'));
+            document.getElementById('download-docx-btn').addEventListener('click', handleExport('docx'));
+
+            // --- HELPER FUNCTIONS ---
+
+            function setDefaultValues() {
+                // Generate a unique incident ID
+                document.getElementById('incident_id').value = `INC-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+
+                // Set current UTC time
+                const now = new Date();
+                const now_utc = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+                document.getElementById('date_reported').value = now_utc;
+
+                // Set default priority
+                document.getElementById('priority').value = 'Medium';
+            }
+
+            function addTableRow(tableId, colCount) {
+                const tbody = document.querySelector(`#${tableId} tbody`);
+                const newRow = tbody.insertRow();
+                newRow.className = 'bg-white border-b';
+
+                for (let i = 0; i < colCount; i++) {
+                    const cell = newRow.insertCell();
+                    cell.className = 'px-4 py-2';
+                    const input = document.createElement('input');
+                    input.type = i === 0 && tableId !== 'actions_table' ? 'datetime-local' : 'text';
+                    if (i === 2 && tableId === 'actions_table') input.type = 'date';
+                    input.className = 'form-input p-1 text-sm';
+                    cell.appendChild(input);
+                }
+
+                const actionCell = newRow.insertCell();
+                actionCell.className = 'px-4 py-2 text-right';
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500 hover:text-red-700"><trash-2/></svg>`;
+                removeButton.onclick = () => newRow.remove();
+                actionCell.appendChild(removeButton);
+            }
+            
+            function setupDropdown(buttonId, dropdownId) {
+                const button = document.getElementById(buttonId);
+                const dropdown = document.getElementById(dropdownId);
+                button.addEventListener('click', () => {
+                    dropdown.classList.toggle('hidden');
+                });
+                window.addEventListener('click', (e) => {
+                    if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            function showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `fixed bottom-5 right-5 text-white px-6 py-3 rounded-lg shadow-lg text-sm transition-opacity duration-300 pointer-events-none ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+                notification.classList.remove('opacity-0');
+                setTimeout(() => {
+                    notification.classList.add('opacity-0');
+                }, 3000);
+            }
+            
+            function getFormData() {
+                const formData = new FormData(document.getElementById('incidentForm'));
+                const data = {};
+                formData.forEach((value, key) => data[key] = value);
+                
+                // Process tables
+                 Object.keys(formSections).forEach(key => {
+                    const tableField = formSections[key].fields.find(f => f.type === 'table');
+                    if(tableField) {
+                        const tableId = tableField.id;
+                        const table = document.getElementById(tableId);
+                        const rows = Array.from(table.querySelectorAll('tbody tr'));
+                        data[tableId] = rows.map(row => {
+                            const inputs = Array.from(row.querySelectorAll('input'));
+                            return inputs.map(input => input.value);
+                        }).filter(row => row.some(cell => cell.trim() !== '')); // Filter out empty rows
+                    }
+                 });
+                return data;
+            }
+
+            function validateForm() {
+                const classification = document.getElementById('conclusion_classification').value;
+                const summary = document.getElementById('conclusion_summary').value.trim();
+                if (!classification || !summary) {
+                    showNotification('Please complete the Conclusion section.', 'error');
+                    // Switch to conclusion tab
+                    document.querySelector('a[data-tab="conclusion"]').click();
+                    return false;
+                }
+                return true;
+            }
+
+            function handleExport(format) {
+                return (e) => {
+                    e.preventDefault();
+                    if (!validateForm()) return;
+                    
+                    const data = getFormData();
+                    let output = '';
+
+                    document.getElementById('export-dropdown').classList.add('hidden');
+
+                    if (format === 'docx') {
+                        generateAndDownloadDocx(data);
+                        showNotification('Downloading report as DOCX...', 'success');
+                        return;
+                    }
+
+                    if (format === 'markdown') {
+                        output = generateMarkdown(data);
+                    } else {
+                        output = generatePlainText(data);
+                    }
+
+                    navigator.clipboard.writeText(output).then(() => {
+                        showNotification(`Report copied to clipboard as ${format}!`, 'success');
+                    }).catch(err => {
+                        showNotification('Failed to copy report.', 'error');
+                        console.error('Clipboard error:', err);
+                    });
+                };
+            }
+
+            function generateAndDownloadDocx(data) {
+                let htmlContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Calibri, sans-serif; font-size: 11pt; }
+                            h1, h2 { color: #2E74B5; }
+                            table { border-collapse: collapse; width: 100%; }
+                            th, td { border: 1px solid #BFBFBF; padding: 8px; text-align: left; }
+                            th { background-color: #F2F2F2; }
+                            p { margin: 0 0 10pt 0; }
+                            b { color: #365F91; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Incident Report: ${data.incident_id || 'N/A'}</h1>
+                `;
+
+                Object.keys(formSections).forEach(key => {
+                    const section = formSections[key];
+                    htmlContent += `<h2>${section.title}</h2>`;
+
+                    section.fields.forEach(field => {
+                        if (field.type === 'table') {
+                            if (data[field.id] && data[field.id].length > 0) {
+                                htmlContent += `<p><b>${field.label}:</b></p>`;
+                                htmlContent += '<table><thead><tr>';
+                                field.headers.forEach(h => htmlContent += `<th>${h}</th>`);
+                                htmlContent += '</tr></thead><tbody>';
+                                data[field.id].forEach(row => {
+                                    htmlContent += '<tr>';
+                                    row.forEach(cell => htmlContent += `<td>${(cell || '').replace('T', ' ')}</td>`);
+                                    htmlContent += '</tr>';
+                                });
+                                htmlContent += '</tbody></table>';
+                            }
+                        } else if (data[field.id]) {
+                            htmlContent += `<p><b>${field.label}:</b> ${data[field.id].replace(/\n/g, '<br>')}</p>`;
+                        }
+                    });
+                });
+
+                htmlContent += '</body></html>';
+                
+                const blob = htmlDocx.asBlob(htmlContent);
+                saveAs(blob, `${data.incident_id || 'incident-report'}.docx`);
+            }
+            
+            function generateMarkdown(data) {
+                let md = `# Incident Report: ${data.incident_id || 'N/A'}\n\n`;
+
+                const generateSection = (sectionKey) => {
+                    const section = formSections[sectionKey];
+                    md += `## ${section.title}\n\n`;
+                    section.fields.forEach(field => {
+                        if (field.type === 'table') {
+                            if (data[field.id] && data[field.id].length > 0) {
+                                md += `**${field.label}:**\n\n`;
+                                md += `| ${field.headers.join(' | ')} |\n`;
+                                md += `|${' :--- |'.repeat(field.headers.length)}\n`;
+                                data[field.id].forEach(row => {
+                                    md += `| ${row.map(cell => cell.replace('T', ' ')).join(' | ')} |\n`;
+                                });
+                                md += '\n';
+                            }
+                        } else if (data[field.id]) {
+                            md += `**${field.label}:**\n`;
+                            md += data[field.id].includes('\n') ? `> ${data[field.id].replace(/\n/g, '\n> ')}\n\n` : `${data[field.id]}\n\n`;
+                        }
+                    });
+                };
+                
+                Object.keys(formSections).forEach(key => generateSection(key));
+                return md;
+            }
+
+            function generatePlainText(data) {
+                 let text = `INCIDENT REPORT: ${data.incident_id || 'N/A'}\n`;
+                 text += "=".repeat(40) + "\n\n";
+
+                const generateSection = (sectionKey) => {
+                    const section = formSections[sectionKey];
+                    text += `${section.title.toUpperCase()}\n`;
+                    text += "-".repeat(section.title.length) + "\n";
+                    
+                    section.fields.forEach(field => {
+                        if (field.type === 'table') {
+                            if (data[field.id] && data[field.id].length > 0) {
+                                text += `\n${field.label}:\n`;
+                                data[field.id].forEach((row, index) => {
+                                    text += `  Record ${index + 1}:\n`;
+                                    row.forEach((cell, cellIndex) => {
+                                        text += `    - ${field.headers[cellIndex]}: ${cell.replace('T', ' ')}\n`;
+                                    });
+                                });
+                            }
+                        } else if (data[field.id]) {
+                            text += `${field.label}: ${data[field.id]}\n`;
+                        }
+                    });
+                    text += "\n";
+                };
+
+                 Object.keys(formSections).forEach(key => generateSection(key));
+                 return text;
+            }
+        });
+    </script>
+</body>
+</html>
+
