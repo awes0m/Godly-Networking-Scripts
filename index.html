@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --text-primary: #24292f;
+            --text-secondary: #57606a;
+            --border-color: #d0d7de;
+            --accent-color: #0969da;
+            --header-bg: #24292f;
+            --header-text: #ffffff;
+            --sidebar-width: 280px;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --accent-color: #58a6ff;
+            --header-bg: #161b22;
+            --header-text: #c9d1d9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: var(--header-text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--header-text);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--header-text);
+        }
+
+        .container {
+            display: flex;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            position: fixed;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-primary);
+            color: var(--accent-color);
+        }
+
+        .nav-link.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            max-width: 1200px;
+            transition: margin-left 0.3s;
+        }
+
+        .content.full-width {
+            margin-left: 0;
+        }
+
+        .markdown-body {
+            background: transparent !important;
+            color: var(--text-primary) !important;
+        }
+
+        .markdown-body h1, .markdown-body h2, .markdown-body h3,
+        .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+            color: var(--text-primary) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        .markdown-body a {
+            color: var(--accent-color) !important;
+        }
+
+        .markdown-body code {
+            background: var(--bg-secondary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .markdown-body pre {
+            background: var(--bg-secondary) !important;
+        }
+
+        .markdown-body blockquote {
+            color: var(--text-secondary) !important;
+            border-left-color: var(--border-color) !important;
+        }
+
+        .markdown-body table tr {
+            background: transparent !important;
+            border-top-color: var(--border-color) !important;
+        }
+
+        .markdown-body table td, .markdown-body table th {
+            border-color: var(--border-color) !important;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin-right: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+                z-index: 999;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header-buttons .header-btn:nth-child(n+3) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 16px;
+            }
+
+            .header-buttons .header-btn:nth-child(n+2) {
+                display: none;
+            }
+
+            .content {
+                padding: 24px 16px;
+            }
+
+            .logo span {
+                display: none;
+            }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Configuration -->
+    <script>
+        const CONFIG = {
+            "defaultSource": "https://raw.githubusercontent.com/awes0m/Godly-Networking-Scripts/refs/heads/main/README.md",
+            "buttons": [
+                { "label": "Live Json formatter", "url": "https://docs.example.com" },
+            ]
+        };
+    </script>
+
+    <header class="header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                </svg>
+            </button>
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 3v7h7L13 3M6 2h8l6 6v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4c0-1.11.89-2 2-2m0 2v16h12V9h-7V4H6z"/>
+                </svg>
+                <span>Markdown Viewer</span>
+            </div>
+        </div>
+        <div class="header-buttons" id="headerButtons">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                <svg class="sun-icon" viewBox="0 0 24 24">
+                    <path d="M12 17.5c3.03 0 5.5-2.47 5.5-5.5S15.03 6.5 12 6.5 6.5 8.97 6.5 12s2.47 5.5 5.5 5.5zM12 7c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0-5L8.5 6.5h7L12 2zm0 20l3.5-4.5h-7L12 22zM2 12l4.5-3.5v7L2 12zm20 0l-4.5 3.5v-7L22 12z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="closeMobileMenu()"></div>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <nav id="navigation"></nav>
+        </aside>
+
+        <main class="content" id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <span>Loading markdown...</span>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let headings = [];
+        
+        // Set initial theme
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        // Load header buttons from config
+        function loadHeaderButtons() {
+            const container = document.getElementById('headerButtons');
+            const themeToggle = container.querySelector('.theme-toggle');
+            
+            CONFIG.buttons.forEach(btn => {
+                const link = document.createElement('a');
+                link.href = btn.url;
+                link.className = 'header-btn';
+                link.textContent = btn.label;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                container.insertBefore(link, themeToggle);
+            });
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+
+        // Extract headings for navigation
+        function extractHeadings(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const headingElements = doc.querySelectorAll('h1, h2, h3');
+            
+            headings = Array.from(headingElements).map((el, index) => ({
+                level: parseInt(el.tagName[1]),
+                text: el.textContent,
+                id: `heading-${index}`
+            }));
+
+            // Add IDs to headings in the HTML
+            let modifiedHtml = html;
+            headingElements.forEach((el, index) => {
+                const originalTag = el.outerHTML;
+                const tagWithId = originalTag.replace(/<(h[1-6])/, `<$1 id="heading-${index}"`);
+                modifiedHtml = modifiedHtml.replace(originalTag, tagWithId);
+            });
+
+            return modifiedHtml;
+        }
+
+        // Build navigation
+        function buildNavigation() {
+            const nav = document.getElementById('navigation');
+            
+            if (headings.length === 0) {
+                nav.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">No headings found</p>';
+                return;
+            }
+
+            const navSection = document.createElement('div');
+            navSection.className = 'nav-section';
+            
+            const navTitle = document.createElement('div');
+            navTitle.className = 'nav-title';
+            navTitle.textContent = 'Contents';
+            navSection.appendChild(navTitle);
+
+            const navList = document.createElement('ul');
+            navList.className = 'nav-list';
+
+            headings.forEach(heading => {
+                const item = document.createElement('li');
+                item.className = 'nav-item';
+                item.style.paddingLeft = `${(heading.level - 1) * 12}px`;
+
+                const link = document.createElement('a');
+                link.className = 'nav-link';
+                link.href = `#${heading.id}`;
+                link.textContent = heading.text;
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    document.getElementById(heading.id).scrollIntoView({ behavior: 'smooth' });
+                    closeMobileMenu();
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                };
+
+                item.appendChild(link);
+                navList.appendChild(item);
+            });
+
+            navSection.appendChild(navList);
+            nav.innerHTML = '';
+            nav.appendChild(navSection);
+        }
+
+        // Load markdown from URL
+        async function loadMarkdown(url) {
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading markdown...</span></div>';
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch markdown');
+                
+                const markdown = await response.text();
+                let html = marked.parse(markdown);
+                html = extractHeadings(html);
+
+                content.innerHTML = `<article class="markdown-body">${html}</article>`;
+                buildNavigation();
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="markdown-body">
+                        <h1>Error Loading Markdown</h1>
+                        <p>Failed to load markdown from: <code>${url}</code></p>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize app
+        loadHeaderButtons();
+        loadMarkdown(CONFIG.defaultSource);
+
+        // Handle scroll for active navigation
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY + 100;
+            
+            headings.forEach(heading => {
+                const element = document.getElementById(heading.id);
+                if (element) {
+                    const offsetTop = element.offsetTop;
+                    const offsetBottom = offsetTop + element.offsetHeight;
+                    
+                    if (scrollPos >= offsetTop && scrollPos < offsetBottom) {
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        document.querySelector(`a[href="#${heading.id}"]`)?.classList.add('active');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
